@@ -1,4 +1,4 @@
-package api.core;
+package com.jobtrail.api.core;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;

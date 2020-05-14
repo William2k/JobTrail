@@ -1,4 +1,4 @@
-package api.config;
+package com.jobtrail.api.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;

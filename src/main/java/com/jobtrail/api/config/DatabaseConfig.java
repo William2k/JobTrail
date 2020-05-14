@@ -1,6 +1,6 @@
-package api.config;
+package com.jobtrail.api.config;
 
-import api.core.CustomJdbc;
+import com.jobtrail.api.core.CustomJdbc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
