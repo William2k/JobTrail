@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class RowMappings {
     public static UserEntity userRowMapping(ResultSet rs, int rowNum) throws SQLException {
         UserEntity user = new UserEntity();
-        user.setId(rs.getLong("id"));
+        //user.setId(rs.getLong("id"));
         user.setUsername(rs.getString("username"));
         user.setFirstName(rs.getString("first_name"));
         user.setLastName(rs.getString("last_name"));

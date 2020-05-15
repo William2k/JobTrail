@@ -2,9 +2,9 @@ package com.jobtrail.api.models.entities;
 
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-public class UserEntity {
-    private long id;
+public class UserEntity extends BaseEntity {
     private String username;
     private String firstName;
     private String lastName;
@@ -14,11 +14,7 @@ public class UserEntity {
     private boolean isActive;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
-
-    public long getId() {
-        return id;
-    }
-    public void setId(long value) {id = value;}
+    private UUID managerId;
 
     public String getUsername() {
         return username;
@@ -54,4 +50,9 @@ public class UserEntity {
 
     public LocalDateTime getDateModified() {return  dateModified;}
     public void  setDateModified(LocalDateTime value) {dateModified = value;}
+
+    public UUID getManagerId() {
+        return managerId;
+    }
+    public void setManagerId(UUID value) {managerId = value;}
 }
