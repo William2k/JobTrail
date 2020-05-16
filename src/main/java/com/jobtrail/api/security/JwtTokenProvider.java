@@ -36,7 +36,6 @@ public class JwtTokenProvider {
 
     private final CustomUserDetails customUserDetails;
 
-    @Autowired
     public JwtTokenProvider(CustomUserDetails customUserDetails) {
         this.customUserDetails = customUserDetails;
     }

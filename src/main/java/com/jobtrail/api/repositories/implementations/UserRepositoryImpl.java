@@ -4,7 +4,6 @@ import com.jobtrail.api.core.CustomJdbc;
 import com.jobtrail.api.models.entities.UserEntity;
 import com.jobtrail.api.repositories.UserRepository;
 import com.jobtrail.api.repositories.implementations.rowMappings.RowMappings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -17,7 +16,6 @@ import java.util.UUID;
 public class UserRepositoryImpl implements UserRepository {
     private final CustomJdbc customJdbc;
 
-    @Autowired
     public UserRepositoryImpl(CustomJdbc customJdbc) {
         this.customJdbc = customJdbc;
     }
