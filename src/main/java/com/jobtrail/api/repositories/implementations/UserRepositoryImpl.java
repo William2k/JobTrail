@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -68,7 +69,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public long add(UserEntity user) throws SQLException {
+    public UUID add(UserEntity user) throws SQLException {
         String sql = "INSERT INTO job_trail.users(username, normalised_username, first_name, last_name, email_address, password, roles, is_active) " +
                 "VALUES (:username, :normalisedUsername, :firstName, :lastName, :emailAddress, :password, :roles, :isActive)";
 
@@ -86,13 +87,11 @@ public class UserRepositoryImpl implements UserRepository {
 
         customJdbc.update(sql, namedParameters, keyHolder, new String[] { "id" });
 
-        Number key = keyHolder.getKey();
-
-        if(key == null) {
+        try {
+            return (UUID)keyHolder.getKeys().get("id");
+        } catch (Exception ex) {
             throw new SQLException("Something went wrong while adding the entity");
         }
-
-        return key.longValue();
     }
 
     @Override
