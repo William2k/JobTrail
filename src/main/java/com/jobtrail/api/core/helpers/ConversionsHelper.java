@@ -1,0 +1,10 @@
+package com.jobtrail.api.core.helpers;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ConversionsHelper {
+    public static String toJson(Object obj) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(obj);
+    }
+}

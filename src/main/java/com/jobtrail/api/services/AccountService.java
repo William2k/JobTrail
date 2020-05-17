@@ -12,6 +12,7 @@ import com.jobtrail.api.security.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,13 +37,17 @@ public class AccountService {
 
     public UserResponseWithTokenDTO signIn(String username, String password) {
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
 
-            authenticationManager.authenticate(authenticationToken);
+            authentication = authenticationManager.authenticate(authentication);
+
+            if(!authentication.isAuthenticated()) { // Sanity check, not needed as authenticate method will crash anyway if they are not authenticated.
+                throw new CustomHttpException("Invalid username/password supplied", HttpStatus.UNAUTHORIZED);
+            }
 
             UserEntity userEntity = userRepository.getByUsername(username);
 
-            User user = new User(userRepository.getByUsername(username));
+            User user = new User(userEntity);
 
             String token = jwtTokenProvider.createToken(username, user.getId(), user.getRoles());
 

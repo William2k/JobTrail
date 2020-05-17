@@ -5,6 +5,7 @@ import com.jobtrail.api.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserResponseDTO getUserById(long id) {
+    public UserResponseDTO getUserById(UUID id) {
         return new UserResponseDTO(userRepository.getById(id));
     }
 

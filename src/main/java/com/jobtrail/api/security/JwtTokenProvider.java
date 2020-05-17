@@ -68,8 +68,8 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
-    public long getId(String token) {
-        return Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userId").toString());
+    public UUID getId(String token) {
+        return UUID.fromString(String.valueOf(Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userId").toString())));
     }
 
     public String resolveToken(HttpServletRequest req) {

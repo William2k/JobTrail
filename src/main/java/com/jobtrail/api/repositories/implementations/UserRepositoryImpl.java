@@ -54,7 +54,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserEntity getById(long id) {
+    public UserEntity getById(UUID id) {
         String sql = "SELECT * FROM job_trail.users " +
                 "WHERE id = :id";
 

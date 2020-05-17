@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface CRUDRepository<T> {
     List<T> getAll();
-    T getById(long id);
+    T getById(UUID id);
     UUID add(T entity) throws SQLException;
     void update(T entity);
     void delete(long id);
