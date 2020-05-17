@@ -7,4 +7,8 @@ public class ConversionsHelper {
     public static String toJson(Object obj) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(obj);
     }
+
+    public static <T> T jsonToObject(String json, Class<T> type) throws JsonProcessingException {
+        return new ObjectMapper().readValue(json, type);
+    }
 }

@@ -2,6 +2,7 @@ package com.jobtrail.api.controllers;
 
 import com.jobtrail.api.config.TestConfig;
 import com.jobtrail.api.core.helpers.ConversionsHelper;
+import com.jobtrail.api.dto.UserResponseWithTokenDTO;
 import com.jobtrail.api.models.RegisterUser;
 import com.jobtrail.api.models.Role;
 import com.jobtrail.api.models.SignIn;
@@ -17,12 +18,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -39,10 +43,14 @@ public class AccountControllerIntegrationTest {
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Before
     public void setUp() {
         UserEntity user = new UserEntity();
         user.setIsActive(true);
+        user.setUsername("test");
         user.setId(UUID.fromString("259b773c-4c89-444e-a1b3-12a647837033"));
         user.setFirstName("test");
         user.setLastName("test");
@@ -51,6 +59,9 @@ public class AccountControllerIntegrationTest {
         user.setStringRoles( new String[] {Role.ROLE_USER.toString()});
 
         Mockito.when(userRepository.getByUsername("test")).thenReturn(user);
+        Mockito.when(userRepository.getById(user.getId())).thenReturn(user);
+
+
     }
 
     @Test
@@ -64,7 +75,7 @@ public class AccountControllerIntegrationTest {
 
         String json = ConversionsHelper.toJson(user);
 
-        this.mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isCreated());
     }
 
@@ -76,7 +87,7 @@ public class AccountControllerIntegrationTest {
 
         String json = ConversionsHelper.toJson(signIn);
 
-        this.mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("test@test.com")));
     }
 
@@ -88,7 +99,7 @@ public class AccountControllerIntegrationTest {
 
         String json = ConversionsHelper.toJson(signIn);
 
-        this.mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isUnauthorized());
     }
 
@@ -100,7 +111,31 @@ public class AccountControllerIntegrationTest {
 
         String json = ConversionsHelper.toJson(signIn);
 
-        this.mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
+        mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void signInAndAuthenticationSuccess() throws Exception {
+        SignIn signIn = new SignIn();
+        signIn.setUsername("test");
+        signIn.setPassword("test");
+
+        String json = ConversionsHelper.toJson(signIn);
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print()).andExpect(status().isOk()).andReturn();
+
+        json = mvcResult.getResponse().getContentAsString();
+
+        UserResponseWithTokenDTO user = ConversionsHelper.jsonToObject(json, UserResponseWithTokenDTO.class);
+
+        mockMvc.perform(get("/api/account/authenticate").header("Authorization", "Bearer " + user.getToken())).andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    public void signInAndAuthenticationWrongToken() throws Exception {
+        mockMvc.perform(get("/api/account/authenticate").header("Authorization", "Bearer Fake")).andDo(print()).andExpect(status().isUnauthorized())
+                .andExpect(status().reason(containsString("Authentication failed")));
     }
 }

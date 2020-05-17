@@ -5,11 +5,12 @@ import com.jobtrail.api.models.entities.UserEntity;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class RowMappings {
     public static UserEntity userRowMapping(ResultSet rs, int rowNum) throws SQLException {
         UserEntity user = new UserEntity();
-        //user.setId(rs.getLong("id"));
+        user.setId(rs.getObject("id", UUID.class));
         user.setUsername(rs.getString("username"));
         user.setFirstName(rs.getString("first_name"));
         user.setLastName(rs.getString("last_name"));

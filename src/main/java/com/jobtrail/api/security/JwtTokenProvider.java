@@ -69,7 +69,7 @@ public class JwtTokenProvider {
     }
 
     public UUID getId(String token) {
-        return UUID.fromString(String.valueOf(Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userId").toString())));
+        return UUID.fromString(String.valueOf(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userId").toString()));
     }
 
     public String resolveToken(HttpServletRequest req) {
@@ -85,7 +85,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            throw new CustomHttpException("Expired or invalid JWT token", HttpStatus.UNAUTHORIZED);
+            return false;
         }
     }
 }

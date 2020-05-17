@@ -26,11 +26,10 @@ public class AccountController {
     @RequestMapping(value = "authenticate", method = RequestMethod.GET)
     public UserResponseDTO authenticate(Authentication authentication) {
         if(authentication == null) {
-            throw new CustomHttpException("Something went wrong with authentication", HttpStatus.BAD_REQUEST);
+            throw new CustomHttpException("Authentication failed", HttpStatus.UNAUTHORIZED);
         }
 
         String username = authentication.getName();
-
         UserResponseDTO user = userService.getUserByUsername(username);
 
         return user;
