@@ -30,7 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/account/authenticate", "/api/account/signin", "/api/account/signup", "/api/group", "/api/group/{name}", "/api/post", "/api/post/{id}", "/api/comment", "/api/comment/{id}"
     };
 
-    @Autowired
     public WebSecurityConfig(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
@@ -42,7 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return new CustomAuthManager();
-        //return super.authenticationManagerBean();
     }
 
     private CorsConfigurationSource corsConfigurationSource() {
