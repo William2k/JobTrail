@@ -2,8 +2,11 @@ package com.jobtrail.api.repositories;
 
 import com.jobtrail.api.models.entities.UserEntity;
 
-public interface UserRepository extends CRUDRepository<UserEntity> {
-    UserEntity getByUsername(String username);
+import java.util.List;
+import java.util.UUID;
 
+public interface UserRepository extends BaseRepository<UserEntity> {
+    UserEntity getByUsername(String username);
     boolean existsByUsername(String username);
+    List<UserEntity> getAllByZone(UUID zoneId);
 }

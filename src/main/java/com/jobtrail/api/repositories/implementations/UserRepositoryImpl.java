@@ -47,6 +47,19 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<UserEntity> getAllByZone(UUID zoneId) {
+        String sql = "SELECT zones.* FROM job_trail.users INNER JOIN users_zones ON user_id = id " +
+                "WHERE zone_id = :zoneId";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("zoneId", zoneId);
+
+        List<UserEntity> result = customJdbc.query(sql, namedParameters, RowMappings::userRowMapping);
+
+        return result;
+    }
+
+    @Override
     public List<UserEntity> getAll() {
         List<UserEntity> result = customJdbc.query("SELECT * FROM job_trail.users", RowMappings::userRowMapping);
 
@@ -111,7 +124,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(UUID id) {
         String sql = "UPDATE job_trail.users " +
                 "SET is_active = false " +
                 "WHERE id = :id";

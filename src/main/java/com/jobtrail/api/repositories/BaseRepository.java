@@ -4,10 +4,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public interface CRUDRepository<T> {
+public interface BaseRepository<T> {
     List<T> getAll();
     T getById(UUID id);
     UUID add(T entity) throws SQLException;
     void update(T entity);
-    void delete(long id);
+    void delete(UUID id);
 }

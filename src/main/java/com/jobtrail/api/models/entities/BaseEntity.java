@@ -12,12 +12,12 @@ public class BaseEntity {
     public UUID getId() { return id; }
     public void setId(UUID value) {id = value;}
 
-    public LocalDateTime getDateCreated() {return  dateCreated;}
+    public LocalDateTime getDateCreated() {return dateCreated;}
     public void  setDateCreated(LocalDateTime value) {dateCreated = value;}
 
-    public LocalDateTime getDateModified() {return  dateModified;}
+    public LocalDateTime getDateModified() {return dateModified;}
     public void  setDateModified(LocalDateTime value) {dateModified = value;}
 
-    public boolean getIsActive() {return  isActive;}
+    public boolean getIsActive() {return isActive;}
     public void  setIsActive(boolean value) {isActive = value;}
 }
