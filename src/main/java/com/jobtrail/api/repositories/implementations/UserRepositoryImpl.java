@@ -68,8 +68,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UUID add(UserEntity user) throws SQLException {
-        String sql = "INSERT INTO job_trail.users(username, normalised_username, first_name, last_name, email_address, password, roles, is_active) " +
-                "VALUES (:username, :normalisedUsername, :firstName, :lastName, :emailAddress, :password, :roles, :isActive)";
+        String sql = "INSERT INTO job_trail.users(username, normalised_username, first_name, last_name, email_address, password, roles, is_active, manager_id) " +
+                "VALUES (:username, :normalisedUsername, :firstName, :lastName, :emailAddress, :password, :roles, :isActive, :managerId)";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("username", user.getUsername())
@@ -79,7 +79,8 @@ public class UserRepositoryImpl implements UserRepository {
                 .addValue("emailAddress", user.getEmailAddress())
                 .addValue("password", user.getPassword())
                 .addValue("roles", user.getStringRoles())
-                .addValue("isActive", user.getIsActive());
+                .addValue("isActive", user.getIsActive())
+                .addValue("managerId", user.getManagerId());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 

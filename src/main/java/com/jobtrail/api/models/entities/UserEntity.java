@@ -11,9 +11,6 @@ public class UserEntity extends BaseEntity {
     private String emailAddress;
     private String password;
     private String[] stringRoles;
-    private boolean isActive;
-    private LocalDateTime dateCreated;
-    private LocalDateTime dateModified;
     private UUID managerId;
 
     public String getUsername() {
@@ -41,15 +38,6 @@ public class UserEntity extends BaseEntity {
 
     public String[] getStringRoles() {return stringRoles;}
     public void setStringRoles(String[] value) {stringRoles = value;}
-
-    public boolean getIsActive() {return  isActive;}
-    public void  setIsActive(boolean value) {isActive = value;}
-
-    public LocalDateTime getDateCreated() {return  dateCreated;}
-    public void  setDateCreated(LocalDateTime value) {dateCreated = value;}
-
-    public LocalDateTime getDateModified() {return  dateModified;}
-    public void  setDateModified(LocalDateTime value) {dateModified = value;}
 
     public UUID getManagerId() {
         return managerId;

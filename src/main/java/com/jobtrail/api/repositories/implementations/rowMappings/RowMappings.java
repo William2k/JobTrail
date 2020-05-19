@@ -20,6 +20,7 @@ public class RowMappings {
         user.setDateCreated(rs.getObject("date_created", LocalDateTime.class));
         user.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
         user.setIsActive(rs.getBoolean("is_active"));
+        user.setManagerId(rs.getObject("manager_id", UUID.class));
         return user;
     }
 }

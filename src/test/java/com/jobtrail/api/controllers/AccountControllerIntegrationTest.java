@@ -1,7 +1,7 @@
 package com.jobtrail.api.controllers;
 
 import com.jobtrail.api.config.TestConfig;
-import com.jobtrail.api.core.helpers.ConversionsHelper;
+import com.jobtrail.api.core.helpers.ConversionHelper;
 import com.jobtrail.api.dto.UserResponseWithTokenDTO;
 import com.jobtrail.api.models.RegisterUser;
 import com.jobtrail.api.models.Role;
@@ -60,8 +60,6 @@ public class AccountControllerIntegrationTest {
 
         Mockito.when(userRepository.getByUsername("test")).thenReturn(user);
         Mockito.when(userRepository.getById(user.getId())).thenReturn(user);
-
-
     }
 
     @Test
@@ -73,7 +71,7 @@ public class AccountControllerIntegrationTest {
         user.setFirstName("test");
         user.setLastName("test");
 
-        String json = ConversionsHelper.toJson(user);
+        String json = ConversionHelper.toJson(user);
 
         mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isCreated());
@@ -85,7 +83,7 @@ public class AccountControllerIntegrationTest {
         signIn.setUsername("test");
         signIn.setPassword("test");
 
-        String json = ConversionsHelper.toJson(signIn);
+        String json = ConversionHelper.toJson(signIn);
 
         mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("test@test.com")));
@@ -97,7 +95,7 @@ public class AccountControllerIntegrationTest {
         signIn.setUsername("test");
         signIn.setPassword("tests");
 
-        String json = ConversionsHelper.toJson(signIn);
+        String json = ConversionHelper.toJson(signIn);
 
         mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isUnauthorized());
@@ -109,7 +107,7 @@ public class AccountControllerIntegrationTest {
         signIn.setUsername("tests");
         signIn.setPassword("test");
 
-        String json = ConversionsHelper.toJson(signIn);
+        String json = ConversionHelper.toJson(signIn);
 
         mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isUnauthorized());
@@ -121,14 +119,14 @@ public class AccountControllerIntegrationTest {
         signIn.setUsername("test");
         signIn.setPassword("test");
 
-        String json = ConversionsHelper.toJson(signIn);
+        String json = ConversionHelper.toJson(signIn);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print()).andExpect(status().isOk()).andReturn();
 
         json = mvcResult.getResponse().getContentAsString();
 
-        UserResponseWithTokenDTO user = ConversionsHelper.jsonToObject(json, UserResponseWithTokenDTO.class);
+        UserResponseWithTokenDTO user = ConversionHelper.jsonToObject(json, UserResponseWithTokenDTO.class);
 
         mockMvc.perform(get("/api/account/authenticate").header("Authorization", "Bearer " + user.getToken())).andDo(print()).andExpect(status().isOk());
     }
