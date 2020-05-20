@@ -20,7 +20,8 @@ public class JobRepositoryImpl implements JobRepository {
 
     @Override
     public List<JobEntity> getAll() {
-        String sql = "SELECT * FROM job_trail.jobs";
+        String sql = "SELECT * FROM job_trail.jobs " +
+                "ORDER BY due_date";
 
         List<JobEntity> result = customJdbc.query(sql, RowMappings::jobRowMapping);
 
@@ -36,6 +37,34 @@ public class JobRepositoryImpl implements JobRepository {
                 .addValue("id", id);
 
         JobEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::jobRowMapping);
+
+        return result;
+    }
+
+    @Override
+    public List<JobEntity> getJobsForUser(UUID userId) {
+        String sql = "SELECT * FROM job_trail.jobs " +
+                "WHERE assigned_user_id = :userId " +
+                "ORDER BY due_date";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("userId", userId);
+
+        List<JobEntity> result = customJdbc.query(sql, namedParameters, RowMappings::jobRowMapping);
+
+        return result;
+    }
+
+    @Override
+    public List<JobEntity> getJobsForUser(String username) {
+        String sql = "SELECT jobs.* FROM job_trail.jobs INNER JOIN job_trail.users ON users.id = assigned_user_id " +
+                "WHERE normalised_username = :username " +
+                "ORDER BY due_date";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("username", username.toUpperCase());
+
+        List<JobEntity> result = customJdbc.query(sql, namedParameters, RowMappings::jobRowMapping);
 
         return result;
     }

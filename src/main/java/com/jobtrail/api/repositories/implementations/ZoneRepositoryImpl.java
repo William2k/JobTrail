@@ -42,7 +42,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     @Override
     public List<ZoneEntity> getAll(String username) {
         String sql = "SELECT zones.* FROM job_trail.users INNER JOIN job_trail.users_zones ON user_id = users.id INNER JOIN job_trail.zones ON zones.id = zone_id " +
-                "WHERE UPPER(username) = :username";
+                "WHERE normalised_username = :username";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("username", username.toUpperCase());
