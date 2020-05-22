@@ -12,7 +12,7 @@ public class JobEntity extends BaseEntity {
     private Priority priority;
     private LocalDateTime dueDate;
     private UUID zoneId;
-    private UUID linkId;
+    private UUID parentJobId;
 
     public UUID getAssignedUserId() {return assignedUserId;}
     public void setAssignedUserId(UUID value) {assignedUserId = value;}
@@ -32,6 +32,6 @@ public class JobEntity extends BaseEntity {
     public UUID getZoneId() { return zoneId; }
     public void setZoneId(UUID value) { zoneId = value; }
 
-    public UUID getLinkId() { return linkId; }
-    public void setLinkId(UUID value) { linkId = value; }
+    public UUID getParentJobId() { return parentJobId; }
+    public void setParentJobId(UUID value) { parentJobId = value; }
 }

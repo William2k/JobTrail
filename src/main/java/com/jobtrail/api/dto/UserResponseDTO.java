@@ -2,10 +2,13 @@ package com.jobtrail.api.dto;
 
 import com.jobtrail.api.models.entities.UserEntity;
 
+import java.util.UUID;
+
 public class UserResponseDTO {
     public UserResponseDTO() { }
 
     public UserResponseDTO(UserEntity user) {
+        setId(user.getId());
         setUsername(user.getUsername());
         setFirstName(user.getFirstName());
         setLastName(user.getLastName());
@@ -16,6 +19,7 @@ public class UserResponseDTO {
         setIsActive(user.getIsActive());
     }
 
+    private UUID id;
     private String username;
     private String firstName;
     private String lastName;
@@ -24,6 +28,10 @@ public class UserResponseDTO {
     private String dateCreated;
     private String dateModified;
     private boolean isActive;
+    private UserResponseDTO manager;
+
+    public UUID getId() { return id; }
+    public void setId(UUID value) {id = value;}
 
     public String getUsername() {
         return username;
@@ -56,4 +64,7 @@ public class UserResponseDTO {
 
     public boolean getIsActive() {return  isActive;}
     public void  setIsActive(boolean value) {isActive = value;}
+
+    public UserResponseDTO getManager() { return manager; }
+    public void setManager(UserResponseDTO value) { manager = value; }
 }

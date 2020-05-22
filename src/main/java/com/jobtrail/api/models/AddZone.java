@@ -1,8 +1,10 @@
-package com.jobtrail.api.models.entities;
+package com.jobtrail.api.models;
+
+import com.jobtrail.api.models.entities.ZoneEntity;
 
 import java.util.UUID;
 
-public class ZoneEntity extends BaseEntity {
+public class AddZone {
     private String name;
     private String description;
     private UUID managerId;
@@ -19,4 +21,14 @@ public class ZoneEntity extends BaseEntity {
 
     public UUID getParentZoneId() { return parentZoneId; }
     public void setParentZoneId(UUID value) { parentZoneId = value; }
+
+    public ZoneEntity toEntity() {
+        ZoneEntity entity = new ZoneEntity();
+        entity.setName(getName());
+        entity.setDescription(getDescription());
+        entity.setManagerId(getManagerId());
+        entity.setParentZoneId(getParentZoneId());
+
+        return entity;
+    }
 }

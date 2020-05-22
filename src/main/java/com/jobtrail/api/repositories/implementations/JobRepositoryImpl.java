@@ -71,15 +71,15 @@ public class JobRepositoryImpl implements JobRepository {
 
     @Override
     public UUID add(JobEntity job) throws SQLException {
-        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, link_id, zone_id, priority, assigned_user_id) " +
-                "VALUES (:name, :description, :dueDate, :isActive, :linkId, :zoneId, :priority, :assignedUserId)";
+        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, parent_job_id, zone_id, priority, assigned_user_id) " +
+                "VALUES (:name, :description, :dueDate, :isActive, :parentJobId, :zoneId, :priority, :assignedUserId)";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("name", job.getName())
                 .addValue("description", job.getDescription())
                 .addValue("dueDate", job.getDueDate())
                 .addValue("isActive", job.getIsActive())
-                .addValue("linkId", job.getLinkId())
+                .addValue("parentJobId", job.getParentJobId())
                 .addValue("zoneId", job.getZoneId())
                 .addValue("priority", job.getPriority())
                 .addValue("assignedUserId", job.getAssignedUserId());
@@ -98,18 +98,18 @@ public class JobRepositoryImpl implements JobRepository {
     @Override
     public void update(JobEntity job) {
         String sql = "UPDATE job_trail.jobs " +
-                "SET name=:name, description=:description, due_date=:dueDate, link_id=:linkId, zone_id=:zoneId, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
+                "SET name=:name, description=:description, due_date=:dueDate, parent_job_id=:parentJobId, zone_id=:zoneId, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
                 "WHERE id = :id";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("id", job.getId())
                 .addValue("name", job.getName())
                 .addValue("description", job.getDescription())
-                .addValue("due_date", job.getDueDate())
-                .addValue("link_id", job.getLinkId())
-                .addValue("zone_id", job.getZoneId())
+                .addValue("dueDate", job.getDueDate())
+                .addValue("parentJobId", job.getParentJobId())
+                .addValue("zoneId", job.getZoneId())
                 .addValue("priority", job.getPriority())
-                .addValue("assigned_user_id", job.getAssignedUserId());
+                .addValue("assignedUserId", job.getAssignedUserId());
 
         customJdbc.update(sql, namedParameters);
     }

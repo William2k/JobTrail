@@ -66,15 +66,29 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     }
 
     @Override
+    public ZoneEntity getByName(String name) {
+        String sql = "SELECT * FROM job_trail.zones " +
+                "WHERE UPPER(name) = :name";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("name", name.toUpperCase());
+
+        ZoneEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::zoneRowMapping);
+
+        return result;
+    }
+
+    @Override
     public UUID add(ZoneEntity zone) throws SQLException {
-        String sql = "INSERT INTO job_trail.zones(name, description, is_active, manager_id) " +
-                "VALUES (:name, :description, :isActive, :managerId)";
+        String sql = "INSERT INTO job_trail.zones(name, description, is_active, manager_id, parent_zone_id) " +
+                "VALUES (:name, :description, :isActive, :managerId, :parentZoneId)";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("name", zone.getName())
                 .addValue("description", zone.getDescription())
                 .addValue("isActive", zone.getIsActive())
-                .addValue("managerId", zone.getManagerId());
+                .addValue("managerId", zone.getManagerId())
+                .addValue("parentZoneId", zone.getParentZoneId());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -90,14 +104,15 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     @Override
     public void update(ZoneEntity zone) {
         String sql = "UPDATE job_trail.zones " +
-                "SET name=:name, description=:description, manager_id=:managerId, date_modified=now() " +
+                "SET name=:name, description=:description, manager_id=:managerId, parent_zone_id = :parentZoneId, date_modified=now() " +
                 "WHERE id = :id";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("id", zone.getId())
                 .addValue("name", zone.getName())
                 .addValue("description", zone.getDescription())
-                .addValue("managerId", zone.getManagerId());
+                .addValue("managerId", zone.getManagerId())
+                .addValue("parentZoneId", zone.getParentZoneId());
 
         customJdbc.update(sql, namedParameters);
     }
