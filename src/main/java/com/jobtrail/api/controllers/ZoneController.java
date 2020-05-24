@@ -23,6 +23,13 @@ public class ZoneController {
         return zone;
     }
 
+    @RequestMapping(value = "get", method = RequestMethod.GET)
+    public ZoneResponseDTO getZone(@RequestParam("name") String zoneName) {
+        ZoneResponseDTO zone = zoneService.getByName(zoneName);
+
+        return zone;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<ZoneResponseDTO> getZones(@RequestParam("userId") UUID userId) {
         List<ZoneResponseDTO> zones = zoneService.getAllForUser(userId);

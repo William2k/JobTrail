@@ -26,7 +26,7 @@ public class ZoneServiceImpl implements ZoneService {
 
     private ZoneResponseDTO entityToDto(ZoneEntity entity) {
         ZoneResponseDTO zone = new ZoneResponseDTO(entity);
-        
+
         zone.setManager(userService.getUserById(entity.getManagerId()));
 
         if(entity.getParentZoneId() != null) {
@@ -34,6 +34,13 @@ public class ZoneServiceImpl implements ZoneService {
         }
 
         return zone;
+    }
+
+    @Override
+    public ZoneResponseDTO getByName(String zoneName) {
+        ZoneEntity zoneEntity = zoneRepository.getByName(zoneName);
+
+        return entityToDto(zoneEntity);
     }
 
     @Override

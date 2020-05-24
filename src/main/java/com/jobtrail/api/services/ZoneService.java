@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ZoneService {
+    ZoneResponseDTO getByName(String zoneName);
     ZoneResponseDTO getById(UUID id);
     List<ZoneResponseDTO> getAllForUser(UUID userId);
     void add(AddZone zone);
