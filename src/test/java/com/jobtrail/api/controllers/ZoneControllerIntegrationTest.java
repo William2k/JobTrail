@@ -31,8 +31,8 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     @MockBean
     private UserService userService;
 
-    private UUID parentZoneId = UUID.fromString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e");
-    private UUID childZoneId = UUID.fromString("2da9c33a-5eeb-43e6-b3e2-7c9af4da2fbd");
+    private final UUID parentZoneId = UUID.fromString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e");
+    private final UUID childZoneId = UUID.fromString("2da9c33a-5eeb-43e6-b3e2-7c9af4da2fbd");
 
     @Before
     public void setUp() throws Exception {
