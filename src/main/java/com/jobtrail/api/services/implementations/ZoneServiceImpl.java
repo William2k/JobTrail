@@ -8,11 +8,13 @@ import com.jobtrail.api.repositories.ZoneRepository;
 import com.jobtrail.api.services.UserService;
 import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Service
 public class ZoneServiceImpl implements ZoneService {
     private final ZoneRepository zoneRepository;
     private final UserService userService;
@@ -24,9 +26,12 @@ public class ZoneServiceImpl implements ZoneService {
 
     private ZoneResponseDTO entityToDto(ZoneEntity entity) {
         ZoneResponseDTO zone = new ZoneResponseDTO(entity);
-
+        
         zone.setManager(userService.getUserById(entity.getManagerId()));
-        zone.setParentZone(getById(entity.getParentZoneId()));
+
+        if(entity.getParentZoneId() != null) {
+            zone.setParentZone(getById(entity.getParentZoneId()));
+        }
 
         return zone;
     }

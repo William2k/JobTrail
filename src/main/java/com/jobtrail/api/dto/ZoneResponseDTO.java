@@ -8,6 +8,7 @@ public class ZoneResponseDTO {
     public ZoneResponseDTO() { }
 
     public ZoneResponseDTO(ZoneEntity entity) {
+        setId(entity.getId());
         setName(entity.getName());
         setDescription(entity.getDescription());
     }

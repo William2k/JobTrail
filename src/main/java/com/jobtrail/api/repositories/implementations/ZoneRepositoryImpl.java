@@ -6,11 +6,13 @@ import com.jobtrail.api.repositories.ZoneRepository;
 import com.jobtrail.api.repositories.implementations.rowMappings.RowMappings;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+@Repository
 public class ZoneRepositoryImpl implements ZoneRepository {
     private final CustomJdbc customJdbc;
 
@@ -86,7 +88,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("name", zone.getName())
                 .addValue("description", zone.getDescription())
-                .addValue("isActive", zone.getIsActive())
+                .addValue("isActive", zone.isActive())
                 .addValue("managerId", zone.getManagerId())
                 .addValue("parentZoneId", zone.getParentZoneId());
 

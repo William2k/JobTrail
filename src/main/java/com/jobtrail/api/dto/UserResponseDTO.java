@@ -16,7 +16,7 @@ public class UserResponseDTO {
         setRoles(user.getStringRoles());
         setDateCreated(user.getDateCreated() != null ? user.getDateCreated().toString() : null);
         setDateModified(user.getDateModified() != null ? user.getDateModified().toString() : null);
-        setIsActive(user.getIsActive());
+        setActive(user.isActive());
     }
 
     private UUID id;
@@ -27,7 +27,7 @@ public class UserResponseDTO {
     private String[] stringRoles;
     private String dateCreated;
     private String dateModified;
-    private boolean isActive;
+    private boolean active;
     private UserResponseDTO manager;
 
     public UUID getId() { return id; }
@@ -62,8 +62,8 @@ public class UserResponseDTO {
     public String getDateModified() { return dateModified; }
     public void setDateModified(String value) { dateModified = value; }
 
-    public boolean getIsActive() {return  isActive;}
-    public void  setIsActive(boolean value) {isActive = value;}
+    public boolean isActive() {return active;}
+    public void  setActive(boolean value) {active = value;}
 
     public UserResponseDTO getManager() { return manager; }
     public void setManager(UserResponseDTO value) { manager = value; }

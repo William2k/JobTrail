@@ -27,7 +27,7 @@ public class User extends UserEntity {
         setEmailAddress(entity.getEmailAddress());
         setFirstName(entity.getFirstName());
         setLastName(entity.getLastName());
-        setIsActive(entity.getIsActive());
+        setActive(entity.isActive());
         List<Role> roles = Arrays.stream(entity.getStringRoles()).map(Role::valueOf).collect(Collectors.toList());
         setRoles(roles);
     }

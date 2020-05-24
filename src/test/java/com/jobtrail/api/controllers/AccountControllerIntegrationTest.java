@@ -49,7 +49,7 @@ public class AccountControllerIntegrationTest {
     @Before
     public void setUp() {
         UserEntity user = new UserEntity();
-        user.setIsActive(true);
+        user.setActive(true);
         user.setUsername("test");
         user.setId(UUID.fromString("259b773c-4c89-444e-a1b3-12a647837033"));
         user.setFirstName("test");

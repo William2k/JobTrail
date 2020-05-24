@@ -92,7 +92,7 @@ public class UserRepositoryImpl implements UserRepository {
                 .addValue("emailAddress", user.getEmailAddress())
                 .addValue("password", user.getPassword())
                 .addValue("roles", user.getStringRoles())
-                .addValue("isActive", user.getIsActive())
+                .addValue("isActive", user.isActive())
                 .addValue("managerId", user.getManagerId());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();

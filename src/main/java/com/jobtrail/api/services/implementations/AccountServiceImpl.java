@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
         if (!existsByUsername(user.getUsername())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.addRole(Role.ROLE_USER);
-            user.setIsActive(true);
+            user.setActive(true);
 
             try {
                 userRepository.add(user);

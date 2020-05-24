@@ -22,7 +22,7 @@ public class RowMappings {
         user.setStringRoles((String[])rs.getArray("roles").getArray());
         user.setDateCreated(rs.getObject("date_created", LocalDateTime.class));
         user.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
-        user.setIsActive(rs.getBoolean("is_active"));
+        user.setActive(rs.getBoolean("is_active"));
         user.setManagerId(rs.getObject("manager_id", UUID.class));
         return user;
     }
@@ -34,12 +34,13 @@ public class RowMappings {
         job.setDescription(rs.getString("description"));
         job.setDueDate(rs.getObject("due_date", LocalDateTime.class));
         job.setZoneId(rs.getObject("zone_id", UUID.class));
+        job.setRecurring(rs.getBoolean("is_recurring"));
         job.setAssignedUserId(rs.getObject("assigned_user_id", UUID.class));
         job.setPriority(rs.getObject("priority", Priority.class));
         job.setDateCreated(rs.getObject("date_created", LocalDateTime.class));
         job.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
-        job.setIsActive(rs.getBoolean("is_active"));
-        job.setLinkId(rs.getObject("link_id", UUID.class));
+        job.setActive(rs.getBoolean("is_active"));
+        job.setParentJobId(rs.getObject("parent_job_id", UUID.class));
 
         return job;
     }
@@ -51,7 +52,7 @@ public class RowMappings {
         zone.setDescription(rs.getString("description"));
         zone.setDateCreated(rs.getObject("date_created", LocalDateTime.class));
         zone.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
-        zone.setIsActive(rs.getBoolean("is_active"));
+        zone.setActive(rs.getBoolean("is_active"));
         zone.setManagerId(rs.getObject("manager_id", UUID.class));
 
         return zone;

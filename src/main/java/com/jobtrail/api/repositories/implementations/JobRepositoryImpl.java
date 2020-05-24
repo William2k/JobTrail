@@ -71,14 +71,15 @@ public class JobRepositoryImpl implements JobRepository {
 
     @Override
     public UUID add(JobEntity job) throws SQLException {
-        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, parent_job_id, zone_id, priority, assigned_user_id) " +
-                "VALUES (:name, :description, :dueDate, :isActive, :parentJobId, :zoneId, :priority, :assignedUserId)";
+        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, recurring, parent_job_id, zone_id, priority, assigned_user_id) " +
+                "VALUES (:name, :description, :dueDate, :isActive, :recurring, :parentJobId, :zoneId, :priority, :assignedUserId)";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("name", job.getName())
                 .addValue("description", job.getDescription())
                 .addValue("dueDate", job.getDueDate())
-                .addValue("isActive", job.getIsActive())
+                .addValue("isActive", job.isActive())
+                .addValue("recurring", job.isRecurring())
                 .addValue("parentJobId", job.getParentJobId())
                 .addValue("zoneId", job.getZoneId())
                 .addValue("priority", job.getPriority())
@@ -98,7 +99,7 @@ public class JobRepositoryImpl implements JobRepository {
     @Override
     public void update(JobEntity job) {
         String sql = "UPDATE job_trail.jobs " +
-                "SET name=:name, description=:description, due_date=:dueDate, parent_job_id=:parentJobId, zone_id=:zoneId, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
+                "SET name=:name, description=:description, due_date=:dueDate, parent_job_id=:parentJobId, zone_id=:zoneId, recurring=:recurring, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
                 "WHERE id = :id";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
@@ -106,6 +107,7 @@ public class JobRepositoryImpl implements JobRepository {
                 .addValue("name", job.getName())
                 .addValue("description", job.getDescription())
                 .addValue("dueDate", job.getDueDate())
+                .addValue("recurring", job.isRecurring())
                 .addValue("parentJobId", job.getParentJobId())
                 .addValue("zoneId", job.getZoneId())
                 .addValue("priority", job.getPriority())

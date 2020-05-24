@@ -7,7 +7,7 @@ public class BaseEntity {
     private UUID id;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
-    private boolean isActive;
+    private boolean active;
 
     public UUID getId() { return id; }
     public void setId(UUID value) {id = value;}
@@ -18,6 +18,6 @@ public class BaseEntity {
     public LocalDateTime getDateModified() {return dateModified;}
     public void  setDateModified(LocalDateTime value) {dateModified = value;}
 
-    public boolean getIsActive() {return isActive;}
-    public void  setIsActive(boolean value) {isActive = value;}
+    public boolean isActive() {return active;}
+    public void  setActive(boolean value) {active = value;}
 }

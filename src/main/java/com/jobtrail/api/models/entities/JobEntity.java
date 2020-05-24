@@ -9,6 +9,7 @@ public class JobEntity extends BaseEntity {
     private UUID assignedUserId;
     private String name;
     private String description;
+    private boolean isRecurring;
     private Priority priority;
     private LocalDateTime dueDate;
     private UUID zoneId;
@@ -34,4 +35,7 @@ public class JobEntity extends BaseEntity {
 
     public UUID getParentJobId() { return parentJobId; }
     public void setParentJobId(UUID value) { parentJobId = value; }
+
+    public boolean isRecurring() { return isRecurring; }
+    public void setRecurring(boolean value) { isRecurring = value; }
 }

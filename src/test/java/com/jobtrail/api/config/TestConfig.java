@@ -1,9 +1,5 @@
 package com.jobtrail.api.config;
 
-import com.jobtrail.api.models.entities.UserEntity;
-import com.jobtrail.api.repositories.UserRepository;
-import com.jobtrail.api.security.CustomUserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -16,8 +12,7 @@ import java.util.Arrays;
 
 @TestConfiguration
 public class TestConfig {
-    @Autowired
-    private UserRepository userRepository;
+
 
     @Bean
     @Primary
