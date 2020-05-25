@@ -2,7 +2,7 @@ package com.jobtrail.api.controllers;
 
 import com.jobtrail.api.config.TestConfig;
 import com.jobtrail.api.core.helpers.ConversionHelper;
-import com.jobtrail.api.dto.UserResponseWithTokenDTO;
+import com.jobtrail.api.dto.full.FullUserResponseWithTokenDTO;
 import com.jobtrail.api.models.RegisterUser;
 import com.jobtrail.api.models.Role;
 import com.jobtrail.api.models.SignIn;
@@ -126,7 +126,7 @@ public class AccountControllerIntegrationTest {
 
         json = mvcResult.getResponse().getContentAsString();
 
-        UserResponseWithTokenDTO user = ConversionHelper.jsonToObject(json, UserResponseWithTokenDTO.class);
+        FullUserResponseWithTokenDTO user = ConversionHelper.jsonToObject(json, FullUserResponseWithTokenDTO.class);
 
         mockMvc.perform(get("/api/account/authenticate").header("Authorization", "Bearer " + user.getToken())).andDo(print()).andExpect(status().isOk());
     }

@@ -1,10 +1,10 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
-import com.jobtrail.api.dto.ZoneResponseDTO;
+import com.jobtrail.api.dto.full.FullZoneResponseDTO;
 import com.jobtrail.api.models.AddZone;
 import com.jobtrail.api.models.entities.ZoneEntity;
-import com.jobtrail.api.dto.simple.SimpleZoneResponseDTO;
+import com.jobtrail.api.dto.ZoneResponseDTO;
 import com.jobtrail.api.repositories.ZoneRepository;
 import com.jobtrail.api.services.UserService;
 import com.jobtrail.api.services.ZoneService;
@@ -25,8 +25,8 @@ public class ZoneServiceImpl implements ZoneService {
         this.userService = userService;
     }
 
-    private ZoneResponseDTO entityToDto(ZoneEntity entity) {
-        ZoneResponseDTO zone = new ZoneResponseDTO(entity);
+    private FullZoneResponseDTO entityToDto(ZoneEntity entity) {
+        FullZoneResponseDTO zone = new FullZoneResponseDTO(entity);
 
         zone.setManager(userService.getUserById(entity.getManagerId()));
 
@@ -38,24 +38,24 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public SimpleZoneResponseDTO getZone(String zoneName) {
-        return new SimpleZoneResponseDTO(zoneRepository.getByName(zoneName));
+    public ZoneResponseDTO getZone(String zoneName) {
+        return new ZoneResponseDTO(zoneRepository.getByName(zoneName));
     }
 
     @Override
-    public ZoneResponseDTO getFullZone(String zoneName) {
+    public FullZoneResponseDTO getFullZone(String zoneName) {
         ZoneEntity zoneEntity = zoneRepository.getByName(zoneName);
 
         return entityToDto(zoneEntity);
     }
 
     @Override
-    public SimpleZoneResponseDTO getZone(UUID id) {
-        return new SimpleZoneResponseDTO(zoneRepository.getById(id));
+    public ZoneResponseDTO getZone(UUID id) {
+        return new ZoneResponseDTO(zoneRepository.getById(id));
     }
 
     @Override
-    public ZoneResponseDTO getFullZone(UUID id) {
+    public FullZoneResponseDTO getFullZone(UUID id) {
         ZoneEntity zoneEntity = zoneRepository.getById(id);
 
         return entityToDto(zoneEntity);
@@ -67,10 +67,10 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public List<ZoneResponseDTO> getAllFullZonesForUser(UUID userId) {
+    public List<FullZoneResponseDTO> getAllFullZonesForUser(UUID userId) {
         List<ZoneEntity> zoneEntities = zoneRepository.getAll(userId);
 
-        List<ZoneResponseDTO> zones = zoneEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
+        List<FullZoneResponseDTO> zones = zoneEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
 
         return zones;
     }

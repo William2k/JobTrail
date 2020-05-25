@@ -1,7 +1,7 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
-import com.jobtrail.api.dto.JobResponseDTO;
+import com.jobtrail.api.dto.full.FullJobResponseDTO;
 import com.jobtrail.api.models.AddJob;
 import com.jobtrail.api.models.entities.JobEntity;
 import com.jobtrail.api.repositories.JobRepository;
@@ -11,7 +11,6 @@ import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,8 +28,8 @@ public class JobServiceImpl implements JobService {
         this.userService = userService;
     }
 
-    private JobResponseDTO entityToDto(JobEntity entity) {
-        JobResponseDTO job = new JobResponseDTO(entity);
+    private FullJobResponseDTO entityToDto(JobEntity entity) {
+        FullJobResponseDTO job = new FullJobResponseDTO(entity);
 
         job.setAssignedUser(userService.getUserById(entity.getAssignedUserId()));
         job.setParentJob(getFullJob(entity.getParentJobId()));
@@ -45,7 +44,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobResponseDTO getFullJob(String name) {
+    public FullJobResponseDTO getFullJob(String name) {
         JobEntity entity = jobRepository.getJobByName(name);
 
         return entityToDto(entity);
@@ -57,7 +56,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobResponseDTO getFullJob(UUID id) {
+    public FullJobResponseDTO getFullJob(UUID id) {
         JobEntity entity = jobRepository.getById(id);
 
         return entityToDto(entity);
@@ -69,10 +68,10 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<JobResponseDTO> getFullJobs(UUID userId) {
+    public List<FullJobResponseDTO> getFullJobs(UUID userId) {
         List<JobEntity> jobEntities = jobRepository.getJobsForUser(userId);
 
-        List<JobResponseDTO> jobs = jobEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
+        List<FullJobResponseDTO> jobs = jobEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
 
         return jobs;
     }

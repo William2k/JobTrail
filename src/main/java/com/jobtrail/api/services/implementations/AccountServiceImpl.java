@@ -1,7 +1,7 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
-import com.jobtrail.api.dto.UserResponseWithTokenDTO;
+import com.jobtrail.api.dto.full.FullUserResponseWithTokenDTO;
 import com.jobtrail.api.models.RegisterUser;
 import com.jobtrail.api.models.Role;
 import com.jobtrail.api.models.SignIn;
@@ -33,12 +33,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public UserResponseWithTokenDTO signIn(SignIn model) {
+    public FullUserResponseWithTokenDTO signIn(SignIn model) {
         return signIn(model.getUsername(), model.getPassword());
     }
 
     @Override
-    public UserResponseWithTokenDTO signIn(String username, String password) {
+    public FullUserResponseWithTokenDTO signIn(String username, String password) {
         try {
             Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
 
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
 
             String token = jwtTokenProvider.createToken(username, user.getId(), user.getRoles());
 
-            return new UserResponseWithTokenDTO(userEntity, token);
+            return new FullUserResponseWithTokenDTO(userEntity, token);
         } catch (AuthenticationException e) {
             throw new CustomHttpException("Invalid username/password supplied", HttpStatus.UNAUTHORIZED);
         }

@@ -2,12 +2,11 @@ package com.jobtrail.api.controllers.base;
 
 import com.jobtrail.api.config.TestConfig;
 import com.jobtrail.api.core.helpers.ConversionHelper;
-import com.jobtrail.api.dto.UserResponseWithTokenDTO;
+import com.jobtrail.api.dto.full.FullUserResponseWithTokenDTO;
 import com.jobtrail.api.models.Role;
 import com.jobtrail.api.models.SignIn;
 import com.jobtrail.api.models.entities.UserEntity;
 import com.jobtrail.api.repositories.UserRepository;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -66,8 +68,12 @@ public class BaseControllerIntegrationTest {
 
         json = mvcResult.getResponse().getContentAsString();
 
-        UserResponseWithTokenDTO user = ConversionHelper.jsonToObject(json, UserResponseWithTokenDTO.class);
+        FullUserResponseWithTokenDTO user = ConversionHelper.jsonToObject(json, FullUserResponseWithTokenDTO.class);
 
         return user.getToken();
+    }
+
+    protected void authenticationTest(String url) throws Exception {
+        mockMvc.perform(get(url)).andDo(print()).andExpect(status().isUnauthorized());
     }
 }

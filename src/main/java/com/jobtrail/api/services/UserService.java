@@ -1,14 +1,14 @@
 package com.jobtrail.api.services;
 
-import com.jobtrail.api.dto.UserResponseDTO;
+import com.jobtrail.api.dto.full.FullUserResponseDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    List<UserResponseDTO> getUsers();
+    List<FullUserResponseDTO> getUsers();
 
-    UserResponseDTO getUserById(UUID id);
+    FullUserResponseDTO getUserById(UUID id);
 
-    UserResponseDTO getUserByUsername(String username);
+    FullUserResponseDTO getUserByUsername(String username);
 }

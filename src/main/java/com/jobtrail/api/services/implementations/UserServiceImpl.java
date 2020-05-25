@@ -1,6 +1,6 @@
 package com.jobtrail.api.services.implementations;
 
-import com.jobtrail.api.dto.UserResponseDTO;
+import com.jobtrail.api.dto.full.FullUserResponseDTO;
 import com.jobtrail.api.repositories.UserRepository;
 import com.jobtrail.api.services.UserService;
 import org.springframework.stereotype.Service;
@@ -18,17 +18,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponseDTO> getUsers() {
+    public List<FullUserResponseDTO> getUsers() {
         return userRepository.getAll().parallelStream()
-                .map(UserResponseDTO::new)
+                .map(FullUserResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UserResponseDTO getUserById(UUID id) {
-        return new UserResponseDTO(userRepository.getById(id));
+    public FullUserResponseDTO getUserById(UUID id) {
+        return new FullUserResponseDTO(userRepository.getById(id));
     }
 
     @Override
-    public UserResponseDTO getUserByUsername(String username) {return new UserResponseDTO(userRepository.getByUsername(username));}
+    public FullUserResponseDTO getUserByUsername(String username) {return new FullUserResponseDTO(userRepository.getByUsername(username));}
 }
