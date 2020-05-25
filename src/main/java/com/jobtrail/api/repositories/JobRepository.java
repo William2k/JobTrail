@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JobRepository extends BaseRepository<JobEntity> {
+    JobEntity getJobByName(String name);
     List<JobEntity> getJobsForUser(UUID userId);
     List<JobEntity> getJobsForUser(String username);
 }

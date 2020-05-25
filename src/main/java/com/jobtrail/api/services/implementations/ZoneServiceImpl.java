@@ -4,6 +4,7 @@ import com.jobtrail.api.core.exceptions.CustomHttpException;
 import com.jobtrail.api.dto.ZoneResponseDTO;
 import com.jobtrail.api.models.AddZone;
 import com.jobtrail.api.models.entities.ZoneEntity;
+import com.jobtrail.api.dto.simple.SimpleZoneResponseDTO;
 import com.jobtrail.api.repositories.ZoneRepository;
 import com.jobtrail.api.services.UserService;
 import com.jobtrail.api.services.ZoneService;
@@ -30,28 +31,43 @@ public class ZoneServiceImpl implements ZoneService {
         zone.setManager(userService.getUserById(entity.getManagerId()));
 
         if(entity.getParentZoneId() != null) {
-            zone.setParentZone(getById(entity.getParentZoneId()));
+            zone.setParentZone(getFullZone(entity.getParentZoneId()));
         }
 
         return zone;
     }
 
     @Override
-    public ZoneResponseDTO getByName(String zoneName) {
+    public SimpleZoneResponseDTO getZone(String zoneName) {
+        return new SimpleZoneResponseDTO(zoneRepository.getByName(zoneName));
+    }
+
+    @Override
+    public ZoneResponseDTO getFullZone(String zoneName) {
         ZoneEntity zoneEntity = zoneRepository.getByName(zoneName);
 
         return entityToDto(zoneEntity);
     }
 
     @Override
-    public ZoneResponseDTO getById(UUID id) {
+    public SimpleZoneResponseDTO getZone(UUID id) {
+        return new SimpleZoneResponseDTO(zoneRepository.getById(id));
+    }
+
+    @Override
+    public ZoneResponseDTO getFullZone(UUID id) {
         ZoneEntity zoneEntity = zoneRepository.getById(id);
 
         return entityToDto(zoneEntity);
     }
 
     @Override
-    public List<ZoneResponseDTO> getAllForUser(UUID userId) {
+    public List<ZoneEntity> getAllZonesForUser(UUID userId) {
+        return zoneRepository.getAll(userId);
+    }
+
+    @Override
+    public List<ZoneResponseDTO> getAllFullZonesForUser(UUID userId) {
         List<ZoneEntity> zoneEntities = zoneRepository.getAll(userId);
 
         List<ZoneResponseDTO> zones = zoneEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
@@ -62,9 +78,21 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public void add(AddZone zone) {
         try {
-            zoneRepository.add(zone.toEntity());
+            ZoneEntity entity = zone.toEntity();
+            entity.setActive(true);
+
+            zoneRepository.add(entity);
         } catch (Exception ex) {
             throw new CustomHttpException("Adding zone failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public void delete(UUID id) {
+        try {
+            zoneRepository.delete(id);
+        } catch (Exception ex) {
+            throw new CustomHttpException("deleting zone failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

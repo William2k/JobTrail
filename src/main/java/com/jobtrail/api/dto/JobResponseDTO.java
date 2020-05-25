@@ -15,10 +15,11 @@ public class JobResponseDTO {
         setName(entity.getName());
         setDescription(entity.getDescription());
         setDueDate(entity.getDueDate());
+        setPriority(entity.getPriority());
     }
 
     private UUID id;
-    private User assignedUser;
+    private UserResponseDTO assignedUser;
     private String name;
     private String description;
     private Priority priority;
@@ -29,8 +30,8 @@ public class JobResponseDTO {
     public UUID getId() { return id; }
     public void setId(UUID value) {id = value;}
 
-    public User getAssignedUser() {return assignedUser;}
-    public void setAssignedUser(User value) {assignedUser = value;}
+    public UserResponseDTO getAssignedUser() {return assignedUser;}
+    public void setAssignedUser(UserResponseDTO value) {assignedUser = value;}
 
     public String getName() {return name;}
     public void setName(String value) {name = value;}

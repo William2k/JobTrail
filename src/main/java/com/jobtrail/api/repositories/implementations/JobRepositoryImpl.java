@@ -6,11 +6,13 @@ import com.jobtrail.api.repositories.JobRepository;
 import com.jobtrail.api.repositories.implementations.rowMappings.RowMappings;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+@Repository
 public class JobRepositoryImpl implements JobRepository {
     private final CustomJdbc customJdbc;
 
@@ -35,6 +37,19 @@ public class JobRepositoryImpl implements JobRepository {
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("id", id);
+
+        JobEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::jobRowMapping);
+
+        return result;
+    }
+
+    @Override
+    public JobEntity getJobByName(String name) {
+        String sql = "SELECT * FROM job_trail.jobs " +
+                "WHERE name = :name";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("name", name);
 
         JobEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::jobRowMapping);
 

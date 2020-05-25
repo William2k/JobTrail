@@ -1,10 +1,11 @@
 package com.jobtrail.api.dto;
 
+import com.jobtrail.api.core.ApiResponse;
 import com.jobtrail.api.models.entities.ZoneEntity;
 
 import java.util.UUID;
 
-public class ZoneResponseDTO {
+public class ZoneResponseDTO implements ApiResponse {
     public ZoneResponseDTO() { }
 
     public ZoneResponseDTO(ZoneEntity entity) {
