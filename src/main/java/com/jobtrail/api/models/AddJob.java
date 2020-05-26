@@ -15,6 +15,7 @@ public class AddJob {
     private LocalDateTime dueDate;
     private UUID zoneId;
     private UUID parentJobId;
+    private UUID managerId;
 
     public UUID getAssignedUserId() {return assignedUserId;}
     public void setAssignedUserId(UUID value) {assignedUserId = value;}
@@ -40,6 +41,9 @@ public class AddJob {
     public boolean isRecurring() { return isRecurring; }
     public void setRecurring(boolean value) { isRecurring = value; }
 
+    public UUID getManagerId() { return managerId; }
+    public void setManagerId(UUID value) { managerId = value; }
+
     public JobEntity toEntity() {
         JobEntity entity = new JobEntity();
         entity.setName(getName());
@@ -50,6 +54,7 @@ public class AddJob {
         entity.setDueDate(getDueDate());
         entity.setZoneId(getZoneId());
         entity.setAssignedUserId(getAssignedUserId());
+        entity.setManagerId(getManagerId());
 
         return entity;
     }

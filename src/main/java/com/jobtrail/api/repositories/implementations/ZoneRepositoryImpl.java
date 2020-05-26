@@ -68,12 +68,13 @@ public class ZoneRepositoryImpl implements ZoneRepository {
     }
 
     @Override
-    public ZoneEntity getByName(String name) {
+    public ZoneEntity getByName(String name, UUID parentZoneId) {
         String sql = "SELECT * FROM job_trail.zones " +
-                "WHERE UPPER(name) = :name";
+                "WHERE UPPER(name) = :name AND parent_zone_id = :parentZoneId";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("name", name.toUpperCase());
+                .addValue("name", name.toUpperCase())
+                .addValue("parentZoneId", parentZoneId);
 
         ZoneEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::zoneRowMapping);
 

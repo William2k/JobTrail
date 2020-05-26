@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/zone")
+@RequestMapping("api/zones")
 public class ZoneController {
     private final ZoneService zoneService;
 
@@ -22,11 +22,6 @@ public class ZoneController {
         return full ? zoneService.getFullZone(zoneId) : zoneService.getZone(zoneId);
     }
 
-    @RequestMapping(value = "get", method = RequestMethod.GET)
-    public Object getZone(@RequestParam("name") String zoneName, @RequestParam( value = "full", defaultValue = "false") boolean full) {
-        return full ? zoneService.getFullZone(zoneName) : zoneService.getZone(zoneName);
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     public Object getZones(@RequestParam("userId") UUID userId, @RequestParam( value = "full", defaultValue = "false") boolean full) {
         return full ? zoneService.getAllFullZonesForUser(userId) : zoneService.getAllZonesForUser(userId);
@@ -34,7 +29,12 @@ public class ZoneController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST)
-    public void addZone(@RequestBody AddZone model) {
-        zoneService.add(model);
+    public UUID addZone(@RequestBody AddZone model) {
+        return zoneService.add(model);
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    public void deleteZone(@PathVariable("id") UUID zoneId) {
+        zoneService.delete(zoneId);
     }
 }

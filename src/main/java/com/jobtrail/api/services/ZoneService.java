@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ZoneService {
-    ZoneResponseDTO getZone(String zoneName);
-    FullZoneResponseDTO getFullZone(String zoneName);
     ZoneResponseDTO getZone(UUID id);
     FullZoneResponseDTO getFullZone(UUID id);
     List<ZoneEntity> getAllZonesForUser(UUID userId);
     List<FullZoneResponseDTO> getAllFullZonesForUser(UUID userId);
-    void add(AddZone zone);
+    UUID add(AddZone zone);
     void delete(UUID id);
 }

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.ParseException;
 import java.util.Map;
+import java.util.UUID;
 
 public class CurrentUser {
     public static  Map<String, ?> GetClaims() throws ParseException {
@@ -19,9 +20,9 @@ public class CurrentUser {
         return jwtClaimSet.getClaims();
     }
 
-    public static Long getId() {
+    public static UUID getId() {
         try {
-            return Long.parseLong(GetClaims().get("userId").toString());
+            return UUID.fromString(GetClaims().get("userId").toString());
         } catch (Exception ex) {
             return null;
         }

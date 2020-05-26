@@ -68,19 +68,18 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
         Mockito.when(zoneRepository.getAll(userId)).thenReturn(zones);
 
-        Mockito.when(zoneRepository.getByName(zone.getName())).thenReturn(zone);
         Mockito.when(zoneRepository.getById(zone.getId())).thenReturn(zone);
         Mockito.when(zoneRepository.getById(zoneChild.getId())).thenReturn(zoneChild);
     }
 
     @Test
-    public void unauthorizedTest() throws Exception {
-        authenticationTest("/api/zone/" + parentZoneId);
+    public void unauthorisedTest() throws Exception {
+        authenticationTest("/api/zones/" + parentZoneId);
     }
 
     @Test
     public void getUserZones() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone?userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones?userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -90,7 +89,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
     @Test
     public void getUserFullZones() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone?full=true&userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones?full=true&userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -100,7 +99,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
     @Test
     public void getZoneById() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone/" + parentZoneId).header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + parentZoneId).header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -110,7 +109,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
     @Test
     public void getFullZoneById() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone/" + childZoneId + "?full=true").header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + childZoneId + "?full=true").header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("parentTest"))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -119,27 +118,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     }
 
     @Test
-    public void getZoneByName() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone/get?name=parentTest").header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
-
-        String json = mvcResult.getResponse().getContentAsString();
-
-        ZoneResponseDTO response = ConversionHelper.jsonToObject(json, ZoneResponseDTO.class);
-    }
-
-    @Test
-    public void getFullZoneByName() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zone/get?name=parentTest&full=true").header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
-
-        String json = mvcResult.getResponse().getContentAsString();
-
-        FullZoneResponseDTO response = ConversionHelper.jsonToObject(json, FullZoneResponseDTO.class);
-    }
-
-    @Test
-    public void addZoneSuccess() throws Exception {
+    public void addZone() throws Exception {
         AddZone addZone = new AddZone();
         addZone.setName("testZone");
         addZone.setDescription("This for testing purposes");
@@ -148,7 +127,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
         String json = ConversionHelper.toJson(addZone);
 
-        mockMvc.perform(post("/api/zone").header("Authorization", "Bearer " + authToken)
+        mockMvc.perform(post("/api/zones").header("Authorization", "Bearer " + authToken)
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print())
                 .andExpect(status().isCreated());

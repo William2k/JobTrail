@@ -5,6 +5,7 @@ import com.jobtrail.api.dto.full.FullJobResponseDTO;
 import com.jobtrail.api.models.AddJob;
 import com.jobtrail.api.models.entities.JobEntity;
 import com.jobtrail.api.repositories.JobRepository;
+import com.jobtrail.api.security.helpers.CurrentUser;
 import com.jobtrail.api.services.JobService;
 import com.jobtrail.api.services.UserService;
 import com.jobtrail.api.services.ZoneService;
@@ -31,23 +32,18 @@ public class JobServiceImpl implements JobService {
     private FullJobResponseDTO entityToDto(JobEntity entity) {
         FullJobResponseDTO job = new FullJobResponseDTO(entity);
 
-        job.setAssignedUser(userService.getUserById(entity.getAssignedUserId()));
-        job.setParentJob(getFullJob(entity.getParentJobId()));
+        if(entity.getAssignedUserId() != null) {
+            job.setAssignedUser(userService.getUserById(entity.getAssignedUserId()));
+        }
+
+        if(entity.getParentJobId() != null) {
+            job.setParentJob(getFullJob(entity.getParentJobId()));
+        }
+
         job.setZone(zoneService.getFullZone(entity.getZoneId()));
+        job.setManager(userService.getUserById(entity.getManagerId()));
 
         return job;
-    }
-
-    @Override
-    public JobEntity getJob(String name) {
-        return jobRepository.getJobByName(name);
-    }
-
-    @Override
-    public FullJobResponseDTO getFullJob(String name) {
-        JobEntity entity = jobRepository.getJobByName(name);
-
-        return entityToDto(entity);
     }
 
     @Override
@@ -63,12 +59,12 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<JobEntity> getJobs(UUID userId) {
+    public List<JobEntity> getJobsForUser(UUID userId) {
         return jobRepository.getJobsForUser(userId);
     }
 
     @Override
-    public List<FullJobResponseDTO> getFullJobs(UUID userId) {
+    public List<FullJobResponseDTO> getFullJobsForUser(UUID userId) {
         List<JobEntity> jobEntities = jobRepository.getJobsForUser(userId);
 
         List<FullJobResponseDTO> jobs = jobEntities.parallelStream().map(this::entityToDto).collect(Collectors.toList());
@@ -77,12 +73,18 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public void add(AddJob job) {
-        try {
-            JobEntity entity = job.toEntity();
-            entity.setActive(true);
+    public UUID add(AddJob job) {
+        JobEntity entity = jobRepository.getJobByName(job.getName(), job.getZoneId());
 
-            jobRepository.add(entity);
+        if(entity != null && entity.isActive()) {
+            throw new CustomHttpException("A job with this name already exists", HttpStatus.CONFLICT);
+        }
+
+        entity = job.toEntity();
+        entity.setActive(true);
+
+        try {
+            return jobRepository.add(entity);
         } catch (Exception ex) {
             throw new CustomHttpException("Adding job failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -91,6 +93,12 @@ public class JobServiceImpl implements JobService {
     @Override
     public void delete(UUID id) {
         try {
+            JobEntity job = getJob(id);
+
+            if(job.getManagerId() != CurrentUser.getId()) {
+                throw new CustomHttpException("Not permitted to delete", HttpStatus.UNAUTHORIZED);
+            }
+
             jobRepository.delete(id);
         } catch (Exception ex) {
             throw new CustomHttpException("deleting job failed", HttpStatus.INTERNAL_SERVER_ERROR);

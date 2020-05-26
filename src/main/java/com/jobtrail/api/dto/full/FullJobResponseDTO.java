@@ -26,6 +26,7 @@ public class FullJobResponseDTO extends FullBaseDTO {
     private LocalDateTime dueDate;
     private FullZoneResponseDTO zone;
     private FullJobResponseDTO parentJob;
+    private FullUserResponseDTO manager;
 
     public UUID getId() { return id; }
     public void setId(UUID value) {id = value;}
@@ -50,4 +51,7 @@ public class FullJobResponseDTO extends FullBaseDTO {
 
     public FullJobResponseDTO getParentJob() { return parentJob; }
     public void setParentJob(FullJobResponseDTO value) { parentJob = value; }
+
+    public FullUserResponseDTO getManager() { return manager; }
+    public void setManager(FullUserResponseDTO value) { manager = value; }
 }

@@ -6,6 +6,7 @@ import com.jobtrail.api.models.AddZone;
 import com.jobtrail.api.models.entities.ZoneEntity;
 import com.jobtrail.api.dto.ZoneResponseDTO;
 import com.jobtrail.api.repositories.ZoneRepository;
+import com.jobtrail.api.security.helpers.CurrentUser;
 import com.jobtrail.api.services.UserService;
 import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
@@ -38,18 +39,6 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public ZoneResponseDTO getZone(String zoneName) {
-        return new ZoneResponseDTO(zoneRepository.getByName(zoneName));
-    }
-
-    @Override
-    public FullZoneResponseDTO getFullZone(String zoneName) {
-        ZoneEntity zoneEntity = zoneRepository.getByName(zoneName);
-
-        return entityToDto(zoneEntity);
-    }
-
-    @Override
     public ZoneResponseDTO getZone(UUID id) {
         return new ZoneResponseDTO(zoneRepository.getById(id));
     }
@@ -76,12 +65,18 @@ public class ZoneServiceImpl implements ZoneService {
     }
 
     @Override
-    public void add(AddZone zone) {
-        try {
-            ZoneEntity entity = zone.toEntity();
-            entity.setActive(true);
+    public UUID add(AddZone zone) {
+        ZoneEntity entity = zoneRepository.getByName(zone.getName(), zone.getParentZoneId());
 
-            zoneRepository.add(entity);
+        if(entity != null && entity.isActive()) {
+            throw new CustomHttpException("A zone with this name already exists under the provided parent zone", HttpStatus.CONFLICT);
+        }
+
+        entity = zone.toEntity();
+        entity.setActive(true);
+
+        try {
+            return zoneRepository.add(entity);
         } catch (Exception ex) {
             throw new CustomHttpException("Adding zone failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -90,6 +85,12 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     public void delete(UUID id) {
         try {
+            ZoneEntity zone = zoneRepository.getById(id);
+
+            if(zone.getManagerId() != CurrentUser.getId()) {
+                throw new CustomHttpException("Not permitted to delete", HttpStatus.UNAUTHORIZED);
+            }
+
             zoneRepository.delete(id);
         } catch (Exception ex) {
             throw new CustomHttpException("deleting zone failed", HttpStatus.INTERNAL_SERVER_ERROR);

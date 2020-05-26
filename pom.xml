@@ -54,6 +54,10 @@
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>8.17</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
 
         <!--Test-->
         <dependency>

@@ -3,19 +3,26 @@ package com.jobtrail.api.core.helpers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.List;
 
 public class ConversionHelper {
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
+    public static void objectMapperInit() {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
+
     public static String toJson(Object obj) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(obj);
+        return objectMapper.writeValueAsString(obj);
     }
 
     public static <T> T jsonToObject(String json, Class<T> type) throws JsonProcessingException {
-        return new ObjectMapper().readValue(json, type);
+        return objectMapper.readValue(json, type);
     }
 
     public static <T> List<T> jsonToListObject(String json) throws JsonProcessingException {
-        return new ObjectMapper().readValue(json, new TypeReference<List<T>>(){});
+        return objectMapper.readValue(json, new TypeReference<List<T>>(){});
     }
 }

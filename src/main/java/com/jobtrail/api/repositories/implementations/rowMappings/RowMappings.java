@@ -41,6 +41,7 @@ public class RowMappings {
         job.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
         job.setActive(rs.getBoolean("is_active"));
         job.setParentJobId(rs.getObject("parent_job_id", UUID.class));
+        job.setManagerId(rs.getObject("manager_id", UUID.class));
 
         return job;
     }

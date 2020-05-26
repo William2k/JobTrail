@@ -44,12 +44,13 @@ public class JobRepositoryImpl implements JobRepository {
     }
 
     @Override
-    public JobEntity getJobByName(String name) {
+    public JobEntity getJobByName(String name, UUID zoneId) {
         String sql = "SELECT * FROM job_trail.jobs " +
-                "WHERE name = :name";
+                "WHERE name = :name AND zone_id = :zoneId";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("name", name);
+                .addValue("name", name)
+                .addValue("zoneId", zoneId);
 
         JobEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::jobRowMapping);
 

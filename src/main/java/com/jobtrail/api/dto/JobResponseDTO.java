@@ -18,5 +18,6 @@ public class JobResponseDTO extends JobEntity {
         setAssignedUserId(entity.getAssignedUserId());
         setParentJobId(entity.getParentJobId());
         setZoneId(entity.getZoneId());
+        setManagerId(entity.getManagerId());
     }
 }
