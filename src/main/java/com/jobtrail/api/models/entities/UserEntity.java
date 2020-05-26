@@ -1,14 +1,29 @@
 package com.jobtrail.api.models.entities;
 
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 public class UserEntity extends BaseEntity {
+    @NotNull(message = "Username cannot be null")
+    @Size(min = 3, max = 25, message = "Username must be between 3 and 20 characters")
     private String username;
+
+    @NotNull(message = "FirstName cannot be null")
+    @Size(min = 3, max = 25, message = "FirstName must be between 3 and 25 characters")
     private String firstName;
+
+    @NotNull(message = "LastName cannot be null")
+    @Size(min = 3, max = 25, message = "LastName must be between 3 and 25 characters")
     private String lastName;
+
+    @NotNull(message = "Email address cannot be null")
+    @Size(min = 3, max = 25, message = "LastName must be between 3 and 40 characters")
+    @Email(message = "Email address must be valid")
     private String emailAddress;
+
     private String password;
     private String[] stringRoles;
     private UUID managerId;

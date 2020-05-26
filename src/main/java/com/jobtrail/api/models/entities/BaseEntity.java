@@ -1,9 +1,11 @@
 package com.jobtrail.api.models.entities;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class BaseEntity {
+    @NotNull(message = "Id cannot be null")
     private UUID id;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;

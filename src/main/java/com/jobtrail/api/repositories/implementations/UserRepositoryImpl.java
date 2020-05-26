@@ -41,7 +41,20 @@ public class UserRepositoryImpl implements UserRepository {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("username", username.toUpperCase());
 
-        boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class); // ignore error postgresql will always return true or false for this
+        boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class);
+
+        return result;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT EXISTS (SELECT id FROM job_trail.users " +
+                "WHERE UPPER(email_address) = :email)";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("email", email.toUpperCase());
+
+        boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class);
 
         return result;
     }

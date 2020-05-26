@@ -1,11 +1,10 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
+import com.jobtrail.api.core.helpers.ConversionHelper;
+import com.jobtrail.api.core.helpers.ValidationHelper;
 import com.jobtrail.api.dto.full.FullUserResponseWithTokenDTO;
-import com.jobtrail.api.models.RegisterUser;
-import com.jobtrail.api.models.Role;
-import com.jobtrail.api.models.SignIn;
-import com.jobtrail.api.models.User;
+import com.jobtrail.api.models.*;
 import com.jobtrail.api.models.entities.UserEntity;
 import com.jobtrail.api.repositories.UserRepository;
 import com.jobtrail.api.security.JwtTokenProvider;
@@ -18,18 +17,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Validator;
+
 @Service
 public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final Validator validator;
 
-    public AccountServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager) {
+    public AccountServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager, Validator validator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
+        this.validator = validator;
     }
 
     @Override
@@ -62,6 +65,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String signUp(RegisterUser registerUser) {
+        ValidationResult result = ValidationHelper.validate(registerUser, validator);
+
+        if(!result.isValid()) {
+            throw new CustomHttpException("User model is not valid: " + ConversionHelper.listToString(result.getErrorMessages(), ","), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         User user = new User(registerUser);
         return signUp(user);
     }
@@ -70,6 +79,10 @@ public class AccountServiceImpl implements AccountService {
     public String signUp(User user) {
         if (existsByUsername(user.getUsername())) {
             throw new CustomHttpException("Username is already in use", HttpStatus.CONFLICT);
+        }
+
+        if(existsByEmail(user.getEmailAddress())) {
+            throw new CustomHttpException("Email is already in use", HttpStatus.CONFLICT);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -89,4 +102,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
+
+    @Override
+    public boolean existsByEmail(String email) { return userRepository.existsByEmail(email); }
 }

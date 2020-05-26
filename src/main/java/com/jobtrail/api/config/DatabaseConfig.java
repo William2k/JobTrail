@@ -10,7 +10,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 public class DatabaseConfig {
     private final ConfigProperties config;
 
-    @Autowired
     public DatabaseConfig(ConfigProperties config) {
         this.config = config;
     }

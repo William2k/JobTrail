@@ -1,8 +1,11 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
+import com.jobtrail.api.core.helpers.ConversionHelper;
+import com.jobtrail.api.core.helpers.ValidationHelper;
 import com.jobtrail.api.dto.full.FullJobResponseDTO;
 import com.jobtrail.api.models.AddJob;
+import com.jobtrail.api.models.ValidationResult;
 import com.jobtrail.api.models.entities.JobEntity;
 import com.jobtrail.api.repositories.JobRepository;
 import com.jobtrail.api.security.helpers.CurrentUser;
@@ -12,7 +15,10 @@ import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,11 +28,13 @@ public class JobServiceImpl implements JobService {
 
     private final ZoneService zoneService;
     private final UserService userService;
+    private final Validator validator;
 
-    public JobServiceImpl(JobRepository jobRepository, ZoneService zoneService, UserService userService) {
+    public JobServiceImpl(JobRepository jobRepository, ZoneService zoneService, UserService userService, Validator validator) {
         this.jobRepository = jobRepository;
         this.zoneService = zoneService;
         this.userService = userService;
+        this.validator = validator;
     }
 
     private FullJobResponseDTO entityToDto(JobEntity entity) {
@@ -74,6 +82,12 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public UUID add(AddJob job) {
+        ValidationResult result = ValidationHelper.validate(job, validator);
+
+        if(!result.isValid()) {
+            throw new CustomHttpException("Job is not valid: " + ConversionHelper.listToString(result.getErrorMessages(), ","), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         JobEntity entity = jobRepository.getJobByName(job.getName(), job.getZoneId());
 
         if(entity != null && entity.isActive()) {

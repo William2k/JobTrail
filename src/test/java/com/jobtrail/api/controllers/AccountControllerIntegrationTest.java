@@ -43,38 +43,23 @@ public class AccountControllerIntegrationTest {
     @MockBean
     private UserRepository userRepository;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserEntity currentUser = new UserEntity();
 
     @Before
     public void setUp() {
-        UserEntity user = new UserEntity();
-        user.setActive(true);
-        user.setUsername("test");
-        user.setId(UUID.fromString("259b773c-4c89-444e-a1b3-12a647837033"));
-        user.setFirstName("test");
-        user.setLastName("test");
-        user.setEmailAddress("test@test.com");
-        user.setPassword("test-pass");
-        user.setStringRoles( new String[] {Role.ROLE_USER.toString()});
+        currentUser.setActive(true);
+        currentUser.setUsername("test");
+        currentUser.setId(UUID.randomUUID());
+        currentUser.setFirstName("test");
+        currentUser.setLastName("test");
+        currentUser.setEmailAddress("test@test.com");
+        currentUser.setPassword("test-pass");
+        currentUser.setStringRoles( new String[] {Role.ROLE_USER.toString()});
 
-        Mockito.when(userRepository.getByUsername("test")).thenReturn(user);
-        Mockito.when(userRepository.getById(user.getId())).thenReturn(user);
-    }
-
-    @Test
-    public void signUpSuccess() throws Exception {
-        RegisterUser user = new RegisterUser();
-        user.setUsername("test");
-        user.setPassword("test");
-        user.setEmailAddress("test@test.com");
-        user.setFirstName("test");
-        user.setLastName("test");
-
-        String json = ConversionHelper.toJson(user);
-
-        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(print()).andExpect(status().isCreated());
+        Mockito.when(userRepository.getByUsername(currentUser.getUsername())).thenReturn(currentUser);
+        Mockito.when(userRepository.getById(currentUser.getId())).thenReturn(currentUser);
+        Mockito.when(userRepository.existsByUsername(currentUser.getUsername())).thenReturn(true);
+        Mockito.when(userRepository.existsByEmail(currentUser.getEmailAddress())).thenReturn(true);
     }
 
     @Test
@@ -135,5 +120,64 @@ public class AccountControllerIntegrationTest {
     public void signInAndAuthenticationWrongToken() throws Exception {
         mockMvc.perform(get("/api/account/authenticate").header("Authorization", "Bearer Fake")).andDo(print()).andExpect(status().isUnauthorized())
                 .andExpect(status().reason(containsString("Authentication failed")));
+    }
+
+    @Test
+    public void signUpSuccess() throws Exception {
+        RegisterUser user = new RegisterUser();
+        user.setUsername("testValid");
+        user.setPassword("test");
+        user.setEmailAddress("testValid@test.com");
+        user.setFirstName("test");
+        user.setLastName("test");
+
+        String json = ConversionHelper.toJson(user);
+
+        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print()).andExpect(status().isCreated());
+    }
+
+    @Test
+    public void signUpInvalidModelFail() throws Exception {
+        RegisterUser user = new RegisterUser();
+        user.setUsername("test");
+        user.setPassword("test");
+        user.setFirstName("test");
+        user.setLastName("test");
+
+        String json = ConversionHelper.toJson(user);
+
+        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print()).andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void signUpUsernameConflict() throws Exception {
+        RegisterUser user = new RegisterUser();
+        user.setUsername(currentUser.getUsername());
+        user.setPassword(currentUser.getPassword());
+        user.setEmailAddress(currentUser.getEmailAddress());
+        user.setFirstName(currentUser.getFirstName());
+        user.setLastName(currentUser.getLastName());
+
+        String json = ConversionHelper.toJson(user);
+
+        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print()).andExpect(status().isConflict());
+    }
+
+    @Test
+    public void signUpEmailConflict() throws Exception {
+        RegisterUser user = new RegisterUser();
+        user.setUsername("test2");
+        user.setPassword(currentUser.getPassword());
+        user.setEmailAddress(currentUser.getEmailAddress());
+        user.setFirstName(currentUser.getFirstName());
+        user.setLastName(currentUser.getLastName());
+
+        String json = ConversionHelper.toJson(user);
+
+        mockMvc.perform(post("/api/account/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print()).andExpect(status().isConflict());
     }
 }

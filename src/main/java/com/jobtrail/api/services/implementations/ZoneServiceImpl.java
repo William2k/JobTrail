@@ -1,8 +1,11 @@
 package com.jobtrail.api.services.implementations;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
+import com.jobtrail.api.core.helpers.ConversionHelper;
+import com.jobtrail.api.core.helpers.ValidationHelper;
 import com.jobtrail.api.dto.full.FullZoneResponseDTO;
 import com.jobtrail.api.models.AddZone;
+import com.jobtrail.api.models.ValidationResult;
 import com.jobtrail.api.models.entities.ZoneEntity;
 import com.jobtrail.api.dto.ZoneResponseDTO;
 import com.jobtrail.api.repositories.ZoneRepository;
@@ -12,6 +15,7 @@ import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Validator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,10 +24,12 @@ import java.util.stream.Collectors;
 public class ZoneServiceImpl implements ZoneService {
     private final ZoneRepository zoneRepository;
     private final UserService userService;
+    private final Validator validator;
 
-    public ZoneServiceImpl(ZoneRepository zoneRepository, UserService userService) {
+    public ZoneServiceImpl(ZoneRepository zoneRepository, UserService userService, Validator validator) {
         this.zoneRepository = zoneRepository;
         this.userService = userService;
+        this.validator = validator;
     }
 
     private FullZoneResponseDTO entityToDto(ZoneEntity entity) {
@@ -66,6 +72,12 @@ public class ZoneServiceImpl implements ZoneService {
 
     @Override
     public UUID add(AddZone zone) {
+        ValidationResult result = ValidationHelper.validate(zone, validator);
+
+        if(!result.isValid()) {
+            throw new CustomHttpException("Zone is not valid: " + ConversionHelper.listToString(result.getErrorMessages(), ","), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
         ZoneEntity entity = zoneRepository.getByName(zone.getName(), zone.getParentZoneId());
 
         if(entity != null && entity.isActive()) {

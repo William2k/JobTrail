@@ -15,4 +15,6 @@ public interface AccountService {
     String signUp(User user);
 
     boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }

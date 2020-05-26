@@ -1,11 +1,19 @@
 package com.jobtrail.api.models.entities;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
 public class ZoneEntity extends BaseEntity {
+    @NotNull(message = "Name cannot be null")
     private String name;
+
+    @Size(min = 3, message = "Description must be at least 3 characters")
     private String description;
+
+    @NotNull(message = "Manager Id cannot be null")
     private UUID managerId;
+
     private UUID parentZoneId;
 
     public String getName() { return name; }

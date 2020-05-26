@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class ConfigProperties {
     private final Environment env;
 
-    @Autowired
     public ConfigProperties(Environment env) {
         this.env = env;
     }

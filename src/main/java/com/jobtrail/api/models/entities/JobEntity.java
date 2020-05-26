@@ -2,18 +2,35 @@ package com.jobtrail.api.models.entities;
 
 import com.jobtrail.api.core.enums.Priority;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class JobEntity extends BaseEntity {
     private UUID assignedUserId;
+
+    @NotNull(message = "Name cannot be null")
+    @Size(min = 3, max = 25, message = "Name must be between 3 and 25 characters")
     private String name;
+
+    @Size(min = 3, message = "Description must be at least 3 characters")
     private String description;
+
     private boolean isRecurring;
+
+    @NotNull(message = "Priority cannot be null")
     private Priority priority;
+
+    @NotNull(message = "Due date cannot be null")
     private LocalDateTime dueDate;
+
+    @NotNull(message = "Zone Id cannot be null")
     private UUID zoneId;
+
     private UUID parentJobId;
+
+    @NotNull(message = "Manager Id cannot be null")
     private UUID managerId;
 
     public UUID getAssignedUserId() {return assignedUserId;}

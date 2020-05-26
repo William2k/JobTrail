@@ -38,8 +38,8 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     @MockBean
     private UserService userService;
 
-    private final UUID parentZoneId = UUID.fromString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e");
-    private final UUID childZoneId = UUID.fromString("2da9c33a-5eeb-43e6-b3e2-7c9af4da2fbd");
+    private final ZoneEntity parent = new ZoneEntity();
+    private final ZoneEntity child = new ZoneEntity();
 
     @Before
     public void setUp() throws Exception {
@@ -51,36 +51,35 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     private void setUserZones(UUID userId) {
         List<ZoneEntity> zones = new ArrayList<>();
 
-        ZoneEntity zone = new ZoneEntity();
-        zone.setId(parentZoneId);
-        zone.setName("parentTest");
-        zone.setDescription("test");
-        zone.setActive(true);
+        parent.setId(UUID.randomUUID());
+        parent.setName("parentTest");
+        parent.setDescription("test");
+        parent.setActive(true);
 
-        zones.add(zone);
+        zones.add(parent);
 
-        ZoneEntity zoneChild = new ZoneEntity();
-        zoneChild.setId(childZoneId);
-        zoneChild.setName("childTest");
-        zoneChild.setDescription("testComp");
-        zoneChild.setActive(true);
-        zoneChild.setParentZoneId(parentZoneId);
+        child.setId(UUID.randomUUID());
+        child.setName("childTest");
+        child.setDescription("testComp");
+        child.setActive(true);
+        child.setParentZoneId(parent.getId());
 
         Mockito.when(zoneRepository.getAll(userId)).thenReturn(zones);
 
-        Mockito.when(zoneRepository.getById(zone.getId())).thenReturn(zone);
-        Mockito.when(zoneRepository.getById(zoneChild.getId())).thenReturn(zoneChild);
+        Mockito.when(zoneRepository.getById(parent.getId())).thenReturn(parent);
+        Mockito.when(zoneRepository.getById(child.getId())).thenReturn(child);
+        Mockito.when(zoneRepository.getByName(child.getName(), child.getParentZoneId())).thenReturn(child);
     }
 
     @Test
     public void unauthorisedTest() throws Exception {
-        authenticationTest("/api/zones/" + parentZoneId);
+        authenticationTest("/api/zones/" + parent.getId());
     }
 
     @Test
     public void getUserZones() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/zones?userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getId().toString()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
 
@@ -90,7 +89,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     @Test
     public void getUserFullZones() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/zones?full=true&userId=" + currentUser.getId()).header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getId().toString()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
 
@@ -99,8 +98,8 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
     @Test
     public void getZoneById() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + parentZoneId).header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("207a488e-b9b0-4a05-8b17-7b38b5ccad9e"))).andReturn();
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + parent.getId()).header("Authorization", "Bearer " + authToken))
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getId().toString()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
 
@@ -109,8 +108,8 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
     @Test
     public void getFullZoneById() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + childZoneId + "?full=true").header("Authorization", "Bearer " + authToken))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("parentTest"))).andReturn();
+        MvcResult mvcResult = mockMvc.perform(get("/api/zones/" + child.getId() + "?full=true").header("Authorization", "Bearer " + authToken))
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getName()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
 
@@ -118,11 +117,11 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
     }
 
     @Test
-    public void addZone() throws Exception {
+    public void addZoneSuccess() throws Exception {
         AddZone addZone = new AddZone();
         addZone.setName("testZone");
         addZone.setDescription("This for testing purposes");
-        addZone.setParentZoneId(parentZoneId);
+        addZone.setParentZoneId(parent.getId());
         addZone.setManagerId(currentUser.getId());
 
         String json = ConversionHelper.toJson(addZone);
@@ -131,5 +130,36 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void addZoneInvalidModelFail() throws Exception {
+        AddZone addZone = new AddZone();
+        addZone.setDescription("This for testing purposes");
+        addZone.setParentZoneId(parent.getId());
+        addZone.setManagerId(currentUser.getId());
+
+        String json = ConversionHelper.toJson(addZone);
+
+        mockMvc.perform(post("/api/zones").header("Authorization", "Bearer " + authToken)
+                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity()).andExpect(status().reason(containsString("Zone is not valid")));
+    }
+
+    @Test
+    public void addZoneNameConflictFail() throws Exception {
+        AddZone addZone = new AddZone();
+        addZone.setName(child.getName());
+        addZone.setDescription("This for testing purposes");
+        addZone.setParentZoneId(parent.getId());
+        addZone.setManagerId(currentUser.getId());
+
+        String json = ConversionHelper.toJson(addZone);
+
+        mockMvc.perform(post("/api/zones").header("Authorization", "Bearer " + authToken)
+                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .andDo(print())
+                .andExpect(status().isConflict());
     }
 }

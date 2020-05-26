@@ -25,4 +25,18 @@ public class ConversionHelper {
     public static <T> List<T> jsonToListObject(String json) throws JsonProcessingException {
         return objectMapper.readValue(json, new TypeReference<List<T>>(){});
     }
+
+    public static String listToString(List<String> list, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+
+        for(String str : list) {
+            if(list.get(list.size() - 1) == str) {
+                sb.append(str);
+            } else {
+                sb.append(str).append(delimiter).append(" ");
+            }
+        }
+
+        return sb.toString();
+    }
 }

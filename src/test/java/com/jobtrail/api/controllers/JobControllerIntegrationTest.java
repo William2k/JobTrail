@@ -1,6 +1,7 @@
 package com.jobtrail.api.controllers;
 
 import com.jobtrail.api.controllers.base.BaseControllerIntegrationTest;
+import com.jobtrail.api.core.enums.Priority;
 import com.jobtrail.api.core.helpers.ConversionHelper;
 import com.jobtrail.api.dto.JobResponseDTO;
 import com.jobtrail.api.dto.full.FullJobResponseDTO;
@@ -39,8 +40,8 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
     @MockBean
     private ZoneService zoneService;
 
-    private JobEntity parent = new JobEntity();
-    private JobEntity child = new JobEntity();
+    private final JobEntity parent = new JobEntity();
+    private final JobEntity child = new JobEntity();
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +51,6 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
     }
 
     private void jobSetUp() {
-        parent = new JobEntity();
         parent.setId(UUID.randomUUID());
         parent.setName("parentTest");
         parent.setDescription("test");
@@ -59,7 +59,6 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         parent.setZoneId(UUID.randomUUID());
         parent.setActive(true);
 
-        child = new JobEntity();
         child.setId(UUID.randomUUID());
         child.setName("childTest");
         child.setDescription("test");
@@ -127,7 +126,8 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         AddJob job = new AddJob();
         job.setName("test");
         job.setDescription("This is for test purposes");
-        job.setDueDate(LocalDateTime.now());
+        job.setPriority(Priority.Normal);
+        job.setDueDate(LocalDateTime.now().plusDays(1));
         job.setZoneId(UUID.randomUUID());
         job.setManagerId(UUID.randomUUID());
 
@@ -140,7 +140,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
     }
 
     @Test
-    public void addJobMissingDataFail() throws Exception {
+    public void addJobInvalidModelFail() throws Exception {
         AddJob job = new AddJob();
         job.setName(parent.getName());
         job.setDescription("This is for test purposes");
@@ -151,7 +151,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         mockMvc.perform(post("/api/jobs").header("Authorization", "Bearer " + authToken)
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andExpect(status().reason(containsString("Job is not valid")));
     }
 
     @Test
@@ -159,7 +159,8 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         AddJob job = new AddJob();
         job.setName(parent.getName());
         job.setDescription("This is for test purposes");
-        job.setDueDate(LocalDateTime.now());
+        job.setDueDate(LocalDateTime.now().plusDays(1));
+        job.setPriority(Priority.Normal);
         job.setZoneId(parent.getZoneId());
         job.setManagerId(currentUser.getId());
 

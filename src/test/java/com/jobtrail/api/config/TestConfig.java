@@ -13,16 +13,4 @@ import java.util.Arrays;
 @TestConfiguration
 public class TestConfig {
 
-
-    @Bean
-    @Primary
-    public UserDetailsService userDetailsService() {
-        UserDetails user = new org.springframework.security.core.userdetails.User("admin", "admin", Arrays.asList(
-                new SimpleGrantedAuthority("ROLE_USER")
-        ));
-
-        return new InMemoryUserDetailsManager(Arrays.asList(
-                user
-        ));
-    }
 }
