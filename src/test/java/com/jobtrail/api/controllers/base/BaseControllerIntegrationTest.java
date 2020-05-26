@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,21 +38,26 @@ public class BaseControllerIntegrationTest {
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     protected UserEntity currentUser;
     protected String authToken;
+
+    private final String userPassword = "test-pass";
 
     protected void init() throws Exception {
         currentUser = new UserEntity();
         currentUser.setActive(true);
         currentUser.setUsername("test");
-        currentUser.setId(UUID.fromString("259b773c-4c89-444e-a1b3-12a647837033"));
+        currentUser.setId(UUID.randomUUID());
         currentUser.setFirstName("test");
         currentUser.setLastName("test");
         currentUser.setEmailAddress("test@test.com");
-        currentUser.setPassword("test-pass");
+        currentUser.setPassword(passwordEncoder.encode(userPassword));
         currentUser.setStringRoles( new String[] {Role.ROLE_USER.toString()});
 
-        Mockito.when(userRepository.getByUsername("test")).thenReturn(currentUser);
+        Mockito.when(userRepository.getByUsername(currentUser.getUsername())).thenReturn(currentUser);
         Mockito.when(userRepository.getById(currentUser.getId())).thenReturn(currentUser);
 
         authToken = getToken();
@@ -59,8 +65,8 @@ public class BaseControllerIntegrationTest {
 
     private String getToken() throws Exception {
         SignIn signIn = new SignIn();
-        signIn.setUsername("test");
-        signIn.setPassword("test");
+        signIn.setUsername(currentUser.getUsername());
+        signIn.setPassword(userPassword);
 
         String json = ConversionHelper.toJson(signIn);
 

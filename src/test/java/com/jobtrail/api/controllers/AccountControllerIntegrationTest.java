@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,17 +44,22 @@ public class AccountControllerIntegrationTest {
     @MockBean
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private final UserEntity currentUser = new UserEntity();
+
+    private final String userPassword = "test-pass";
 
     @Before
     public void setUp() {
         currentUser.setActive(true);
-        currentUser.setUsername("test");
+        currentUser.setUsername("testUser");
         currentUser.setId(UUID.randomUUID());
         currentUser.setFirstName("test");
         currentUser.setLastName("test");
         currentUser.setEmailAddress("test@test.com");
-        currentUser.setPassword("test-pass");
+        currentUser.setPassword(passwordEncoder.encode(userPassword));
         currentUser.setStringRoles( new String[] {Role.ROLE_USER.toString()});
 
         Mockito.when(userRepository.getByUsername(currentUser.getUsername())).thenReturn(currentUser);
@@ -65,13 +71,13 @@ public class AccountControllerIntegrationTest {
     @Test
     public void signInSuccess() throws Exception {
         SignIn signIn = new SignIn();
-        signIn.setUsername("test");
-        signIn.setPassword("test");
+        signIn.setUsername(currentUser.getUsername());
+        signIn.setPassword(userPassword);
 
         String json = ConversionHelper.toJson(signIn);
 
         mockMvc.perform(post("/api/account/signin").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString("test@test.com")));
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(currentUser.getEmailAddress())));
     }
 
     @Test
@@ -101,8 +107,8 @@ public class AccountControllerIntegrationTest {
     @Test
     public void signInAndAuthenticationSuccess() throws Exception {
         SignIn signIn = new SignIn();
-        signIn.setUsername("test");
-        signIn.setPassword("test");
+        signIn.setUsername(currentUser.getUsername());
+        signIn.setPassword(userPassword);
 
         String json = ConversionHelper.toJson(signIn);
 
@@ -155,7 +161,7 @@ public class AccountControllerIntegrationTest {
     public void signUpUsernameConflict() throws Exception {
         RegisterUser user = new RegisterUser();
         user.setUsername(currentUser.getUsername());
-        user.setPassword(currentUser.getPassword());
+        user.setPassword(userPassword);
         user.setEmailAddress(currentUser.getEmailAddress());
         user.setFirstName(currentUser.getFirstName());
         user.setLastName(currentUser.getLastName());
@@ -170,7 +176,7 @@ public class AccountControllerIntegrationTest {
     public void signUpEmailConflict() throws Exception {
         RegisterUser user = new RegisterUser();
         user.setUsername("test2");
-        user.setPassword(currentUser.getPassword());
+        user.setPassword(userPassword);
         user.setEmailAddress(currentUser.getEmailAddress());
         user.setFirstName(currentUser.getFirstName());
         user.setLastName(currentUser.getLastName());
