@@ -78,13 +78,13 @@ public class ZoneServiceImpl implements ZoneService {
             throw new CustomHttpException("Zone is not valid: " + ConversionHelper.listToString(result.getErrorMessages(), ","), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        ZoneEntity entity = zoneRepository.getByName(zone.getName(), zone.getParentZoneId());
+        boolean exists = zoneRepository.exists(zone.getName(), zone.getParentZoneId());
 
-        if(entity != null && entity.isActive()) {
+        if(exists) {
             throw new CustomHttpException("A zone with this name already exists under the provided parent zone", HttpStatus.CONFLICT);
         }
 
-        entity = zone.toEntity();
+        ZoneEntity entity = zone.toEntity();
         entity.setActive(true);
 
         try {

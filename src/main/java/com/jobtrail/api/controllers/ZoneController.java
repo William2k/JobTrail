@@ -30,6 +30,7 @@ public class ZoneController {
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST)
     public UUID addZone(@RequestBody AddZone model) {
+
         return zoneService.add(model);
     }
 

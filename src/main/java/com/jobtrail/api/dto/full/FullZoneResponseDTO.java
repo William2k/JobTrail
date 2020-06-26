@@ -16,6 +16,7 @@ public class FullZoneResponseDTO extends FullBaseDTO {
         setName(entity.getName());
         setDescription(entity.getDescription());
         setActive(entity.isActive());
+        setPublic(entity.isPublic());
         setDateCreated(entity.getDateCreated());
         setDateModified(entity.getDateModified());
     }
@@ -23,6 +24,7 @@ public class FullZoneResponseDTO extends FullBaseDTO {
     private UUID id;
     private String name;
     private String description;
+    private boolean isPublic;
     private FullUserResponseDTO manager;
     private FullZoneResponseDTO parentZone;
 
@@ -34,6 +36,9 @@ public class FullZoneResponseDTO extends FullBaseDTO {
 
     public String getDescription() { return description; }
     public void setDescription(String value) { description = value; }
+
+    public boolean isPublic() { return isPublic; }
+    public void setPublic(boolean value) { isPublic = value;}
 
     public FullUserResponseDTO getManager() { return manager; }
     public void setManager(FullUserResponseDTO value) { manager = value; }

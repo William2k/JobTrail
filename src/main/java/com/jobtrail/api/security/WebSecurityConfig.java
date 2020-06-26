@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final String[] authAllowUrls = new String[]{
-            "/api/account/authenticate", "/api/account/signin", "/api/account/signup", "/api/group", "/api/group/{name}", "/api/post", "/api/post/{id}", "/api/comment", "/api/comment/{id}"
+            "/api/account/authenticate", "/api/account/signin", "/api/account/signup"
     };
 
     public WebSecurityConfig(JwtTokenProvider jwtTokenProvider) {

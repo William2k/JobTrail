@@ -31,7 +31,8 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public List<ZoneEntity> getAll(UUID userId) {
-        String sql = "SELECT zones.* FROM job_trail.zones INNER JOIN job_trail.users_zones ON user_id = :userId";
+        String sql = "SELECT zones.* FROM job_trail.zones JOIN job_trail.users_zones ON id = zone_id " +
+                "WHERE user_id = :userId";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("userId", userId);
@@ -43,7 +44,7 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
     @Override
     public List<ZoneEntity> getAll(String username) {
-        String sql = "SELECT zones.* FROM job_trail.users INNER JOIN job_trail.users_zones ON user_id = users.id INNER JOIN job_trail.zones ON zones.id = zone_id " +
+        String sql = "SELECT zones.* FROM job_trail.users JOIN job_trail.users_zones ON user_id = users.id INNER JOIN job_trail.zones ON zones.id = zone_id " +
                 "WHERE normalised_username = :username";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
@@ -63,6 +64,20 @@ public class ZoneRepositoryImpl implements ZoneRepository {
                 .addValue("id", id);
 
         ZoneEntity result = customJdbc.queryForObject(sql, namedParameters, RowMappings::zoneRowMapping);
+
+        return result;
+    }
+
+    @Override
+    public boolean exists(String name, UUID parentZoneId) {
+        String sql = "SELECT EXISTS (SELECT * FROM job_trail.zones " +
+                "WHERE UPPER(name) = :name AND parent_zone_id = :parentZoneId)";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("name", name.toUpperCase())
+                .addValue("parentZoneId", parentZoneId);
+
+        boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class);
 
         return result;
     }
@@ -95,13 +110,30 @@ public class ZoneRepositoryImpl implements ZoneRepository {
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
-        customJdbc.update(sql, namedParameters, keyHolder, new String[] { "id" });
-
         try {
-            return (UUID)keyHolder.getKeys().get("id");
+            customJdbc.update(sql, namedParameters, keyHolder, new String[] { "id" });
+
+            UUID zoneId = (UUID)keyHolder.getKeys().get("id");
+
+            addUserToZone(zone.getManagerId(), zoneId, "Admin");
+
+            return zoneId;
         } catch (Exception ex) {
             throw new SQLException("Something went wrong while adding the entity");
         }
+    }
+
+    @Override
+    public void addUserToZone(UUID userId, UUID zoneId, String role) {
+        String sql = "INSERT INTO job_trail.users_zones(user_id, zone_id, role, is_active) " +
+                "VALUES (:userId, :zoneId, :role, true)";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("zoneId", zoneId)
+                .addValue("role", role);
+
+        customJdbc.update(sql, namedParameters);
     }
 
     @Override

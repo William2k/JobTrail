@@ -11,6 +11,7 @@ public class ZoneResponseDTO extends ZoneEntity {
         setDescription(entity.getDescription());
         setManagerId(entity.getManagerId());
         setParentZoneId(entity.getParentZoneId());
+        setPublic(entity.isPublic());
         setActive(entity.isActive());
         setDateCreated(entity.getDateCreated());
         setDateModified(entity.getDateModified());

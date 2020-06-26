@@ -68,6 +68,7 @@ public class ZoneControllerIntegrationTest extends BaseControllerIntegrationTest
 
         Mockito.when(zoneRepository.getById(parent.getId())).thenReturn(parent);
         Mockito.when(zoneRepository.getById(child.getId())).thenReturn(child);
+        Mockito.when(zoneRepository.exists(child.getName(), child.getParentZoneId())).thenReturn(true);
         Mockito.when(zoneRepository.getByName(child.getName(), child.getParentZoneId())).thenReturn(child);
     }
 

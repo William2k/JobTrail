@@ -11,6 +11,8 @@ public class ZoneEntity extends BaseEntity {
     @Size(min = 3, message = "Description must be at least 3 characters")
     private String description;
 
+    private boolean isPublic;
+
     @NotNull(message = "Manager Id cannot be null")
     private UUID managerId;
 
@@ -21,6 +23,9 @@ public class ZoneEntity extends BaseEntity {
 
     public String getDescription() { return description; }
     public void setDescription(String value) { description = value; }
+
+    public boolean isPublic() { return isPublic; }
+    public void setPublic(boolean value) { isPublic = value;}
 
     public UUID getManagerId() { return managerId; }
     public void setManagerId(UUID value) { managerId = value; }
