@@ -55,6 +55,13 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public List<JobEntity> getJobsForZone(UUID zoneId) {
+        List<JobEntity> jobEntities = jobRepository.getJobsForZone(zoneId);
+
+        return jobEntities;
+    }
+
+    @Override
     public JobEntity getJob(UUID id) {
         return jobRepository.getById(id);
     }
@@ -88,13 +95,13 @@ public class JobServiceImpl implements JobService {
             throw new CustomHttpException("Job is not valid: " + ConversionHelper.listToString(result.getErrorMessages(), ","), HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        JobEntity entity = jobRepository.getJobByName(job.getName(), job.getZoneId());
+        boolean exists = jobRepository.exists(job.getName(), job.getZoneId());
 
-        if(entity != null && entity.isActive()) {
+        if(exists) {
             throw new CustomHttpException("A job with this name already exists", HttpStatus.CONFLICT);
         }
 
-        entity = job.toEntity();
+        JobEntity entity = job.toEntity();
         entity.setActive(true);
 
         try {

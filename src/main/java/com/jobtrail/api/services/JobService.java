@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JobService {
+    List<JobEntity> getJobsForZone(UUID zoneId);
     JobEntity getJob(UUID id);
     FullJobResponseDTO getFullJob(UUID id);
     List<JobEntity> getJobsForUser(UUID userId);

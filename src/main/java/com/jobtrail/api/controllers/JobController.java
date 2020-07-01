@@ -1,5 +1,6 @@
 package com.jobtrail.api.controllers;
 
+import com.jobtrail.api.core.exceptions.CustomHttpException;
 import com.jobtrail.api.models.AddJob;
 import com.jobtrail.api.security.helpers.CurrentUser;
 import com.jobtrail.api.services.JobService;
@@ -23,8 +24,14 @@ public class JobController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Object getJobsForUser(@RequestParam("userId") UUID userId, @RequestParam(value = "full", defaultValue = "false") boolean full) {
-        return full ? jobService.getFullJobsForUser(userId) : jobService.getJobsForUser(userId);
+    public Object getJobsForUser(@RequestParam(value = "userId", defaultValue = "") UUID userId, @RequestParam(value = "zoneId", defaultValue = "") UUID zoneId, @RequestParam( value = "full", defaultValue = "false") boolean full) {
+        if(userId != null) {
+            return full ? jobService.getFullJobsForUser(userId) : jobService.getJobsForUser(userId);
+        } else if(zoneId != null) {
+            return jobService.getJobsForZone(zoneId);
+        } else {
+            throw new CustomHttpException(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,7 +41,7 @@ public class JobController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void deleteZone(@PathVariable("id") UUID zoneId) {
-        jobService.delete(zoneId);
+    public void deleteJob(@PathVariable("id") UUID jobId) {
+        jobService.delete(jobId);
     }
 }

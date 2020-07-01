@@ -44,6 +44,34 @@ public class JobRepositoryImpl implements JobRepository {
     }
 
     @Override
+    public boolean exists(String name, UUID zoneId) {
+        String sql = "SELECT EXISTS(SELECT * FROM job_trail.jobs " +
+                "WHERE name = :name AND zone_id = :zoneId)";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("name", name)
+                .addValue("zoneId", zoneId);
+
+        boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class);
+
+        return result;
+    }
+
+    @Override
+    public List<JobEntity> getJobsForZone(UUID zoneId) {
+        String sql = "SELECT * FROM job_trail.jobs " +
+                "WHERE zone_id = :zoneId " +
+                "AND parent_job_id IS NULL";
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("zoneId", zoneId);
+
+        List<JobEntity> result = customJdbc.query(sql, namedParameters, RowMappings::jobRowMapping);
+
+        return result;
+    }
+
+    @Override
     public JobEntity getJobByName(String name, UUID zoneId) {
         String sql = "SELECT * FROM job_trail.jobs " +
                 "WHERE name = :name AND zone_id = :zoneId";
@@ -87,8 +115,8 @@ public class JobRepositoryImpl implements JobRepository {
 
     @Override
     public UUID add(JobEntity job) throws SQLException {
-        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, recurring, parent_job_id, zone_id, priority, assigned_user_id) " +
-                "VALUES (:name, :description, :dueDate, :isActive, :recurring, :parentJobId, :zoneId, :priority, :assignedUserId)";
+        String sql = "INSERT INTO job_trail.jobs(name, description, due_date, is_active, is_recurring, parent_job_id, zone_id, priority, assigned_user_id, manager_id) " +
+                "VALUES (:name, :description, :dueDate, :isActive, :recurring, :parentJobId, :zoneId, :priority, :assignedUserId, :managerId)";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("name", job.getName())
@@ -98,8 +126,9 @@ public class JobRepositoryImpl implements JobRepository {
                 .addValue("recurring", job.isRecurring())
                 .addValue("parentJobId", job.getParentJobId())
                 .addValue("zoneId", job.getZoneId())
-                .addValue("priority", job.getPriority())
-                .addValue("assignedUserId", job.getAssignedUserId());
+                .addValue("priority", job.getPriority().name())
+                .addValue("assignedUserId", job.getAssignedUserId())
+                .addValue("managerId", job.getManagerId());
 
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -115,7 +144,7 @@ public class JobRepositoryImpl implements JobRepository {
     @Override
     public void update(JobEntity job) {
         String sql = "UPDATE job_trail.jobs " +
-                "SET name=:name, description=:description, due_date=:dueDate, parent_job_id=:parentJobId, zone_id=:zoneId, recurring=:recurring, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
+                "SET name=:name, description=:description, due_date=:dueDate, parent_job_id=:parentJobId, zone_id=:zoneId, is_recurring=:recurring, priority=:priority, assigned_user_id=:assignedUserId, date_modified=now() " +
                 "WHERE id = :id";
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource()
@@ -126,7 +155,7 @@ public class JobRepositoryImpl implements JobRepository {
                 .addValue("recurring", job.isRecurring())
                 .addValue("parentJobId", job.getParentJobId())
                 .addValue("zoneId", job.getZoneId())
-                .addValue("priority", job.getPriority())
+                .addValue("priority", job.getPriority().name())
                 .addValue("assignedUserId", job.getAssignedUserId());
 
         customJdbc.update(sql, namedParameters);

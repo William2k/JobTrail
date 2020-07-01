@@ -22,7 +22,7 @@ public class AddJob {
     private boolean isRecurring;
 
     @NotNull(message = "Priority cannot be null")
-    private Priority priority;
+    private String priority;
 
     @NotNull(message = "Due date cannot be null")
     @Future(message = "Due date must be a future date/time")
@@ -45,8 +45,8 @@ public class AddJob {
     public String getDescription() {return description;}
     public void setDescription(String value) {description = value;}
 
-    public Priority getPriority() { return priority; }
-    public void setPriority(Priority value) { this.priority = value; }
+    public String getPriority() { return priority; }
+    public void setPriority(String value) { this.priority = value; }
 
     public LocalDateTime getDueDate() { return dueDate; }
     public void setDueDate(LocalDateTime value) { dueDate = value; }
@@ -69,7 +69,7 @@ public class AddJob {
         entity.setDescription(getDescription());
         entity.setRecurring(isRecurring());
         entity.setParentJobId(getParentJobId());
-        entity.setPriority(getPriority());
+        entity.setPriority(Priority.valueOf(getPriority().toUpperCase()));
         entity.setDueDate(getDueDate());
         entity.setZoneId(getZoneId());
         entity.setAssignedUserId(getAssignedUserId());

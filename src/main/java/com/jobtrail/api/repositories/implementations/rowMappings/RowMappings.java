@@ -36,7 +36,7 @@ public class RowMappings {
         job.setZoneId(rs.getObject("zone_id", UUID.class));
         job.setRecurring(rs.getBoolean("is_recurring"));
         job.setAssignedUserId(rs.getObject("assigned_user_id", UUID.class));
-        job.setPriority(rs.getObject("priority", Priority.class));
+        job.setPriority(Priority.valueOf(rs.getString("priority")));
         job.setDateCreated(rs.getObject("date_created", LocalDateTime.class));
         job.setDateModified(rs.getObject("date_modified", LocalDateTime.class));
         job.setActive(rs.getBoolean("is_active"));

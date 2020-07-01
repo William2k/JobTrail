@@ -1,6 +1,5 @@
 package com.jobtrail.api.controllers;
 
-import com.jobtrail.api.dto.full.FullZoneResponseDTO;
 import com.jobtrail.api.models.AddZone;
 import com.jobtrail.api.services.ZoneService;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,6 @@ public class ZoneController {
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST)
     public UUID addZone(@RequestBody AddZone model) {
-
         return zoneService.add(model);
     }
 

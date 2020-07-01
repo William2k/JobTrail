@@ -42,6 +42,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
 
     private final JobEntity parent = new JobEntity();
     private final JobEntity child = new JobEntity();
+    private final UUID zoneId = UUID.randomUUID();
 
     @Before
     public void setUp() throws Exception {
@@ -56,7 +57,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         parent.setDescription("test");
         parent.setDueDate(LocalDateTime.now());
         parent.setManagerId(currentUser.getId());
-        parent.setZoneId(UUID.randomUUID());
+        parent.setZoneId(zoneId);
         parent.setActive(true);
 
         child.setId(UUID.randomUUID());
@@ -74,6 +75,8 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         Mockito.when(jobRepository.getById(child.getId())).thenReturn(child);
         Mockito.when(jobRepository.getJobsForUser(currentUser.getId())).thenReturn(jobs);
         Mockito.when(jobRepository.getJobByName(parent.getName(), parent.getZoneId())).thenReturn(parent);
+        Mockito.when(jobRepository.getJobsForZone(zoneId)).thenReturn(jobs);
+        Mockito.when(jobRepository.exists(parent.getName(), parent.getZoneId())).thenReturn(true);
     }
 
     @Test
@@ -82,8 +85,18 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
     }
 
     @Test
+    public void getJobs() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/jobs?zoneId=" + zoneId).header("Authorization", "Bearer " + authToken))
+                .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getName()))).andReturn();
+
+        String json = mvcResult.getResponse().getContentAsString();
+
+        List<JobResponseDTO> response = ConversionHelper.jsonToListObject(json);
+    }
+
+    @Test
     public void getJob() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/jobs/" + parent.getId().toString()).header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/jobs/" + parent.getId()).header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getName()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -93,7 +106,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
 
     @Test
     public void getFullJob() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/jobs/" + child.getId().toString() + "?full=true").header("Authorization", "Bearer " + authToken))
+        MvcResult mvcResult = mockMvc.perform(get("/api/jobs/" + child.getId() + "?full=true").header("Authorization", "Bearer " + authToken))
                 .andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(parent.getName()))).andReturn();
 
         String json = mvcResult.getResponse().getContentAsString();
@@ -126,7 +139,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         AddJob job = new AddJob();
         job.setName("test");
         job.setDescription("This is for test purposes");
-        job.setPriority(Priority.Normal);
+        job.setPriority(Priority.NORMAL.name());
         job.setDueDate(LocalDateTime.now().plusDays(1));
         job.setZoneId(UUID.randomUUID());
         job.setManagerId(UUID.randomUUID());
@@ -160,7 +173,7 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         job.setName(parent.getName());
         job.setDescription("This is for test purposes");
         job.setDueDate(LocalDateTime.now().plusDays(1));
-        job.setPriority(Priority.Normal);
+        job.setPriority(Priority.NORMAL.name());
         job.setZoneId(parent.getZoneId());
         job.setManagerId(currentUser.getId());
 
