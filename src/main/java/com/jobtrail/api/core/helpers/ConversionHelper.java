@@ -29,8 +29,10 @@ public class ConversionHelper {
     public static String listToString(List<String> list, String delimiter) {
         StringBuilder sb = new StringBuilder();
 
+        String last = list.get(list.size() - 1);
+
         for(String str : list) {
-            if(list.get(list.size() - 1) == str) {
+            if(last == str) {
                 sb.append(str);
             } else {
                 sb.append(str).append(delimiter).append(" ");
