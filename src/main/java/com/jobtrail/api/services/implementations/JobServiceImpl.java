@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -64,6 +65,13 @@ public class JobServiceImpl implements JobService {
     @Override
     public JobEntity getJob(UUID id) {
         return jobRepository.getById(id);
+    }
+
+    @Override
+    public List<JobEntity> getJobs(UUID zoneId, UUID userId, LocalDateTime from, LocalDateTime to) {
+        List<JobEntity> jobEntities = jobRepository.getJobs(zoneId, userId, from, to);
+
+        return jobEntities;
     }
 
     @Override

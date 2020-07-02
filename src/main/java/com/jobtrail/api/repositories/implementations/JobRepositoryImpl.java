@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +54,34 @@ public class JobRepositoryImpl implements JobRepository {
                 .addValue("zoneId", zoneId);
 
         boolean result = customJdbc.queryForObject(sql, namedParameters, boolean.class);
+
+        return result;
+    }
+
+    @Override
+    public List<JobEntity> getJobs(UUID zoneId, UUID userId, LocalDateTime from, LocalDateTime to) {
+        String sql = "SELECT * FROM job_trail.jobs " +
+                "WHERE is_active = true ";
+
+        if(zoneId != null) {
+            sql += "AND zone_id = :zoneId ";
+        }
+
+        if(userId != null) {
+            sql += "AND assigned_user_id = :userId ";
+        }
+
+        if(from != null && to != null) {
+            sql += "AND due_date >= :from AND due_date <= :to ";
+        }
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("zoneId", zoneId)
+                .addValue("userId", userId)
+                .addValue("from", from)
+                .addValue("to", to);
+
+        List<JobEntity> result = customJdbc.query(sql, namedParameters, RowMappings::jobRowMapping);
 
         return result;
     }

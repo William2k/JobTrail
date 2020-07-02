@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,6 +78,8 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
         Mockito.when(jobRepository.getJobByName(parent.getName(), parent.getZoneId())).thenReturn(parent);
         Mockito.when(jobRepository.getJobsForZone(zoneId)).thenReturn(jobs);
         Mockito.when(jobRepository.exists(parent.getName(), parent.getZoneId())).thenReturn(true);
+        Mockito.when(jobRepository.getJobs(null, currentUser.getId(), null, null)).thenReturn(Collections.singletonList(parent));
+        Mockito.when(jobRepository.getJobs(zoneId, null, null, null)).thenReturn(Collections.singletonList(parent));
     }
 
     @Test

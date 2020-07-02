@@ -2,11 +2,15 @@ package com.jobtrail.api.controllers;
 
 import com.jobtrail.api.core.exceptions.CustomHttpException;
 import com.jobtrail.api.models.AddJob;
+import com.jobtrail.api.models.entities.JobEntity;
 import com.jobtrail.api.security.helpers.CurrentUser;
 import com.jobtrail.api.services.JobService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,14 +28,11 @@ public class JobController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Object getJobsForUser(@RequestParam(value = "userId", defaultValue = "") UUID userId, @RequestParam(value = "zoneId", defaultValue = "") UUID zoneId, @RequestParam( value = "full", defaultValue = "false") boolean full) {
-        if(userId != null) {
-            return full ? jobService.getFullJobsForUser(userId) : jobService.getJobsForUser(userId);
-        } else if(zoneId != null) {
-            return jobService.getJobsForZone(zoneId);
-        } else {
-            throw new CustomHttpException(null, HttpStatus.BAD_REQUEST);
-        }
+    public List<JobEntity> getJobs(
+            @RequestParam(value = "zoneId", defaultValue = "") UUID zoneId, @RequestParam(value = "userId", defaultValue = "") UUID userId,
+            @RequestParam(value = "from", defaultValue = "") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(value = "to", defaultValue = "") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to) {
+        return jobService.getJobs(zoneId, userId, from, to);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
