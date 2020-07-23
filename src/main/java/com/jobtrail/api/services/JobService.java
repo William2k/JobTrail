@@ -15,6 +15,7 @@ public interface JobService {
     FullJobResponseDTO getFullJob(UUID id);
     List<JobEntity> getJobsForUser(UUID userId);
     List<FullJobResponseDTO> getFullJobsForUser(UUID userId);
+    void takeJob(UUID jobId);
     UUID add(AddJob job);
     void delete(UUID id);
 }

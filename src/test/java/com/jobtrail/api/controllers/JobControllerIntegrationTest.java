@@ -27,6 +27,7 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -186,5 +187,19 @@ public class JobControllerIntegrationTest extends BaseControllerIntegrationTest 
                 .contentType(MediaType.APPLICATION_JSON).content(json))
                 .andDo(print())
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void takeJobSuccess() throws Exception {
+        mockMvc.perform(put("/api/jobs/" + parent.getId() + "/takeJob").header("Authorization", "Bearer " + authToken))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void takeJobFakeJobIdFail() throws Exception {
+        mockMvc.perform(put("/api/jobs/" + UUID.randomUUID() + "/takeJob").header("Authorization", "Bearer " + authToken))
+                .andDo(print())
+                .andExpect(status().isNotFound()).andExpect(status().reason(containsString("Job not found")));
     }
 }

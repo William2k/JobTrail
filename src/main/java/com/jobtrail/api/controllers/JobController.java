@@ -35,6 +35,9 @@ public class JobController {
         return jobService.getJobs(zoneId, userId, from, to);
     }
 
+    @RequestMapping(value = "{id}/takeJob", method = RequestMethod.PUT)
+    public void takeJob(@PathVariable("id") UUID  jobId) { jobService.takeJob(jobId); }
+
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST)
     public UUID addJob(@RequestBody AddJob addJob) {

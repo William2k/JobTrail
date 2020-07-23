@@ -96,6 +96,19 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public void takeJob(UUID jobId) {
+        JobEntity job = getJob(jobId);
+
+        if(job == null) {
+            throw new CustomHttpException("Job not found", HttpStatus.NOT_FOUND);
+        }
+
+        job.setAssignedUserId(CurrentUser.getId());
+
+        jobRepository.update(job);
+    }
+
+    @Override
     public UUID add(AddJob job) {
         ValidationResult result = ValidationHelper.validate(job, validator);
 
